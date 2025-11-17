@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs'
 const LOG_PATH = './logs/queries.log';
 
 function logQuery(obj) {
@@ -7,4 +7,4 @@ function logQuery(obj) {
   fs.appendFileSync(LOG_PATH, line + '\n');
 }
 
-module.exports = { logQuery };
+export { logQuery };

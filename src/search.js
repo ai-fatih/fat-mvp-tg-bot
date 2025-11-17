@@ -1,6 +1,5 @@
-const fs = require('fs');
-const Fuse = require('fuse.js');
-
+ import fs from 'fs'
+import Fuse from 'fuse.js'
 const KB_PATH = './kb/kb.json';
 
 function loadKB() {

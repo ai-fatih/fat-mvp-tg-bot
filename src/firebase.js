@@ -9,38 +9,37 @@ import {
   collection,
   serverTimestamp,
   updateDoc,
-} from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
+  increment
+} from "firebase/firestore"; 
 
 // -------------------------------
 // 1. Конфиг Firebase
 // -------------------------------
-// Эти данные копируешь из Firebase → Project settings → "Your apps" → Web app → Config
 const firebaseConfig = {
-    apiKey: "AIzaSyAn7onVw37JV9m2eHBnWrrFOY0Vra8FBaY",
-    authDomain: "storehouse-e80f2.firebaseapp.com",
-    projectId: "storehouse-e80f2",
-    storageBucket: "storehouse-e80f2.firebasestorage.app",
-    messagingSenderId: "831198914942",
-    appId: "1:831198914942:web:d62474887446d621c52b2f",
-    measurementId: "G-2361VFMN87"
-  };
+  apiKey: "AIzaSyAn7onVw37JV9m2eHBnWrrFOY0Vra8FBaY",
+  authDomain: "storehouse-e80f2.firebaseapp.com",
+  projectId: "storehouse-e80f2",
+  storageBucket: "storehouse-e80f2.firebasestorage.app",
+  messagingSenderId: "831198914942",
+  appId: "1:831198914942:web:d62474887446d621c52b2f",
+  measurementId: "G-2361VFMN87"
+};
 
 // -------------------------------
 // 2. Инициализация приложения
 // -------------------------------
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app); 
 
 // -------------------------------
-// 3. Инициализация Firestore
+// 3. USERS: создание или обновление
 // -------------------------------
-const db = getFirestore(app);
-
-const analytics = getAnalytics(app);
-// -------------------------------
-// 4. USERS: создание или обновление
-// -------------------------------
-export async function createOrUpdateUser({ telegramId, username }) {
+export async function createOrUpdateUser({
+  telegramId,
+  username,
+  role = "бухгалтер",
+  storeHouseVersion = "6.3.870"
+}) {
   const userRef = doc(db, "users", telegramId.toString());
   const userSnap = await getDoc(userRef);
 
@@ -49,47 +48,59 @@ export async function createOrUpdateUser({ telegramId, username }) {
     await setDoc(userRef, {
       telegramId,
       username: username || null,
-      role: "unknown",
+      role,
       status: "active",
       questionCount: 0,
+      storeHouseVersion,
       dateRegistered: serverTimestamp(),
-      lastInteractionAt: serverTimestamp(),
+      lastInterActionAt: serverTimestamp(),
     });
     return "created";
   } else {
-    // Обновляем lastInteractionAt
+    // Обновляем lastInterActionAt
     await updateDoc(userRef, {
-      lastInteractionAt: serverTimestamp(),
+      lastInterActionAt: serverTimestamp(),
     });
     return "updated";
   }
 }
 
 // -------------------------------
-// 5. MESSAGES: запись вопроса
+// 4. MESSAGES: запись вопроса
 // -------------------------------
 export async function saveUserMessage({
   telegramId,
   text,
-  status = "new"
+  status = "new",
+  answerFromBot = "",
+  attachments = [""],
+  directions = "incoming",
+  errorCode = "",
+  isEscalated = false
 }) {
-  const messagesRef = collection(db, "messages");
+  const messagesRef = collection(db, "message");
 
   await addDoc(messagesRef, {
+    userId: telegramId.toString(),
     telegramId,
     text,
     status,
-    createdAt: serverTimestamp(),
+    answerFromBot,
+    attachments,
+    directions,
+    errorCode,
+    isEscalated,
+    createdAt: serverTimestamp()
   });
 
-  // Также увеличиваем счётчик вопросов у пользователя
+  // Увеличиваем счётчик вопросов пользователя атомарно
   const userRef = doc(db, "users", telegramId.toString());
   await updateDoc(userRef, {
-    questionCount: (await getDoc(userRef)).data().questionCount + 1
+    questionCount: increment(1)
   });
 }
 
 // -------------------------------
-// Экспортируем db, если понадобится ещё где-нибудь
+// Экспорт db, если понадобится
 // -------------------------------
 export { db };
