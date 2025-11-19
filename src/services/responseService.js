@@ -1,4 +1,4 @@
-import { DOCS_URL } from '../config.js';
+import { config } from '../config.js';
 
 export function generateResponse(text) {
   const lower = text.toLowerCase();
@@ -12,7 +12,7 @@ export function generateResponse(text) {
     reply_markup: {
       inline_keyboard: [
         [{ text: "Мои вопросы", callback_data: "my_questions" }],
-        [{ text: "Документация", url: DOCS_URL }],
+        [{ text: "Документация", url: config.DOCS_URL }],
         [{ text: "Позвать оператора", callback_data: "call_operator" }],
       ],
     },
