@@ -7,7 +7,7 @@ export async function startHandler(bot, msg) {
 
   try {
     await createOrUpdateUser({ telegramId: chatId, username });
-    await safeSend(bot, chatId, ` Привет, ${msg.from.first_name || 'коллега'}!\nЯ помогу с вопросами по StoreHouse Pro.\nНапиши вопрос в свободной форме — и я постараюсь подсказать решение.`
+    await safeSend(bot, chatId, ` Привет, ${msg.from.first_name || 'коллега'}!\n\nЯ ассистент по StoreHouse Pro\nНапиши вопрос в свободной форме — постараюсь помочь`
   );
   } catch (err) {
     console.error("[START] Ошибка:", err);

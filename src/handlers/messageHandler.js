@@ -13,6 +13,7 @@ export async function messageHandler(bot, msg) {
   try {
     await createOrUpdateUser({ telegramId: chatId, username });
     await saveUserMessage({ telegramId: chatId, text });
+    
     const { text: replyText, buttons } = generateResponse(text);
     await safeSend(bot, chatId, replyText, buttons);
   } catch (err) {

@@ -11,7 +11,6 @@ export function generateResponse(text) {
   const buttons = {
     reply_markup: {
       inline_keyboard: [
-        [{ text: "Мои вопросы", callback_data: "my_questions" }],
         [{ text: "Документация", url: config.DOCS_URL }],
         [{ text: "Позвать оператора", callback_data: "call_operator" }],
       ],
