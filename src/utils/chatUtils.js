@@ -1,17 +1,19 @@
 // src/utils/chatUtils.js
 import { getChatState, setChatState } from './chatState.js';
 import { bot } from '../bot.js';
+import { clearServiceMessages } from './clearServiceMessages.js';
 
 export async function updateQuestionsList(chatId, deleteOld = true) {
   const state = getChatState(chatId);
   const questions = state.questions;
 
   // Формируем текст списка
-  let text = '📋 Ваши вопросы:\n\n';
+  let text = '📋 Здесь ваши вопросы:\n\n';
   questions.forEach((q, index) => {
     text += `${index + 1}. ${q}\n`;
   });
-  text += 'Менеджер вернется к вам с ответами в ближайшее время.'
+  text += '\nМенеджер обработает и вернется с ответами в ближайшее время.';
+  text += '\nМаксимум 20 вопросов.';
 
   try {
     if (state.questionsMsgId) {
@@ -31,15 +33,7 @@ export async function updateQuestionsList(chatId, deleteOld = true) {
 
     // Удаляем старые служебные сообщения (если нужно)
     if (deleteOld && state.serviceMsgIds) {
-      for (const msgId of state.serviceMsgIds) {
-        try {
-          await bot.deleteMessage(chatId, msgId);
-          console.log(`[DELETE] Удалено служебное сообщение: ${msgId}`);
-        } catch (err) {
-          console.error(`[DELETE] Ошибка при удалении ${msgId}:`, err);
-        }
-      }
-      setChatState(chatId, 'serviceMsgIds', []); // Очищаем список
+        await clearServiceMessages(chatId); // Используем новую функцию
     }
   } catch (err) {
     console.error('[QUESTIONS] Ошибка обновления списка:', err);

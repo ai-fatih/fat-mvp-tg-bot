@@ -1,57 +1,66 @@
 // src/handlers/messageHandler.js
-import { chatState, setChatState, getChatState } from '../utils/chatState.js';
+import { getChatState, setChatState } from '../utils/chatState.js';
 import { createOrUpdateUser, saveUserMessage } from '../services/firebaseService.js';
-// import { generateResponse } from '../services/responseService.js';
-import { safeSend } from '../utils/safeSend.js'; 
-
+import { safeSend } from '../utils/safeSend.js';
 import { updateQuestionsList } from '../utils/chatUtils.js';
+import { clearServiceMessages } from '../utils/clearServiceMessages.js';
 
 export async function messageHandler(bot, msg) {
   const chatId = msg.chat.id;
   const text = msg.text;
 
-  if (!text || text.startsWith("/start")) return;
+  if (!text || text.startsWith('/start')) return;
 
-  // Сохраняем ID сообщения пользователя
-  setChatState(chatId, 'lastUserMessageId', msg.message_id);
-
-  const username = msg.from.username || msg.from.first_name;
+  const userMsgId = msg.message_id;
+  const state = getChatState(chatId);
 
   try {
-    //обновляет данные пользователя
-    await createOrUpdateUser({ telegramId: chatId, username });
-    //сохраняет сообщение
+    await createOrUpdateUser({ telegramId: chatId, username: msg.from.username || msg.from.first_name });
     await saveUserMessage({ telegramId: chatId, text });
 
-     // Проверяем, не является ли это ответом на запрос сохранения вопроса
-     if (text === 'Да' || text === 'Нет') {
-      // Сохраняем ID сообщения пользователя ("Да"/"Нет")
-      const state = getChatState(chatId);
-      if (!state.serviceMsgIds) state.serviceMsgIds = [];
-      state.serviceMsgIds.push(msg.message_id); // ← Добавляем ID сообщения "Да"
-
+    // Если это ответ «Да»/«Нет» на запрос сохранения
+    if (text === 'Да' || text === 'Нет') {
+      // Добавляем ID сообщения «Да»/«Нет» в список на удаление
+      state.serviceMsgIds.push(userMsgId);
+    
       if (text === 'Да') {
         const lastQuestion = state.lastUserQuestion;
-        if (lastQuestion) {
+        if (lastQuestion && !state.questions.includes(lastQuestion)) {
           state.questions.push(lastQuestion);
-          
-          // Обновляем список и удаляем ВСЕ служебные сообщения
-          await updateQuestionsList(chatId, true);
-          
-          // Отправляем подтверждение и сохраняем его ID
-          const confirmMsg = await safeSend(bot, chatId, 'Вопрос сохранён!');
-          if (confirmMsg?.message_id) {
-            state.serviceMsgIds.push(confirmMsg.message_id);
+    
+          // Удаляем исходное сообщение пользователя
+          try {
+            await bot.deleteMessage(chatId, state.lastUserMessageId);
+            console.log(`[DELETE] Удалено сообщение пользователя: ${state.lastUserMessageId}`);
+          } catch (err) {
+            console.error(`[DELETE] Ошибка при удалении:`, err);
           }
         }
+    
+        // Обновляем список вопросов И удаляем ВСЕ служебные сообщения
+        await updateQuestionsList(chatId, true);
+      } else if (text === 'Нет') {
+        // Удаляем исходный вопрос
+        try {
+          await bot.deleteMessage(chatId, state.lastUserMessageId);
+          console.log(`[DELETE] Удалено исходное сообщение: ${state.lastUserMessageId}`);
+        } catch (err) {
+          console.error(`[DELETE] Ошибка при удалении:`, err);
+        }
+      
+        // Удаляем служебные сообщения
+        await clearServiceMessages(chatId);
       }
-      return;
+    
+      return; // ВАЖНО: завершаем обработку, чтобы не отправлять новый запрос
     }
+    
 
-    //формирует ответ на основе ключевых слов
-    // const { text: replyText, buttons } = generateResponse(text);
+    // Сохраняем ID текущего сообщения как lastUserMessageId (для последующего удаления)
+    setChatState(chatId, 'lastUserMessageId', userMsgId);
+    setChatState(chatId, 'lastUserQuestion', text);
 
-    // Отправляем вопрос на подтверждение
+    // Отправляем запрос на сохранение
     const confirmMsg = await safeSend(
       bot,
       chatId,
@@ -65,32 +74,14 @@ export async function messageHandler(bot, msg) {
       }
     );
 
-    // Сохраняем ID служебного сообщения для последующего удаления
+    // Сохраняем ID запроса на сохранение
     if (confirmMsg?.message_id) {
-      const state = getChatState(chatId);
-      if (!state.serviceMsgIds) state.serviceMsgIds = [];
       state.serviceMsgIds.push(confirmMsg.message_id);
     }
-    
-    // Сохраняем вопрос для последующего добавления
-    setChatState(chatId, 'lastUserQuestion', text);
 
-    console.log('[safeSend] Состояние чата:', chatState.get(chatId));
-     
+    console.log('[safeSend] Состояние чата:', state);
+
   } catch (err) {
     console.error("[MESSAGE] Ошибка:", err);
   }
 }
-
-/**
-  Что делает saveUserMessage():
-    Создаёт документ в коллекции messages:
-      Поля: telegramId, text, createdAt, status, isEscalated.
-      Обновляет questionCount у пользователя в users.
-    Что делает generateResponse():
-      Анализирует текст на ключевые слова (списание, накладная, отчёт).
-      Возвращает заготовленный ответ и кнопки:
-        «Документация» (ссылка)
-        «Позвать оператора» (callback).
-  Итог: сообщение сохранено, пользователь получил ответ с кнопками.
- */
