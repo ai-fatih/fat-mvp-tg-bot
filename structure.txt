@@ -1,0 +1,76 @@
+.
+├── .env
+├── .git
+│   ├── COMMIT_EDITMSG
+│   ├── config
+│   ├── HEAD
+│   ├── index
+│   ├── logs
+│   │   ├── HEAD
+│   │   └── refs
+│   │       ├── heads
+│   │       │   ├── decomposer-botjs
+│   │       │   └── master
+│   │       └── remotes
+│   │           └── origin
+│   │               ├── decomposer-botjs
+│   │               └── HEAD
+│   ├── objects
+│   │   ├── 0d
+│   │   │   └── 2e7f50fcd94733b6a943feeb4881b638bbf69c
+│   │   ├── 1c
+│   │   │   └── 226857a2ffad1854e1428f107947191d8b66e7
+│   │   ├── 2d
+│   │   │   └── f3cf02dc3134f6ca9afb71e006e5c2fa535a31
+│   │   ├── 36
+│   │   │   └── a787c2819b70b5ee2c7540ee81e1a24313ce6f
+│   │   ├── 44
+│   │   │   └── fb5eb23949c8c69df685a74e86f40eff682837
+│   │   ├── 4a
+│   │   │   └── 07071b5ccdece75b383f90d59bebd9204ef0f1
+│   │   ├── 4f
+│   │   │   └── 0dcb9279d0d15992a88a8f862d002cacf5ac9c
+│   │   ├── 5a
+│   │   │   └── 85346421197cc61a0bb5a2e979d0471b502c3f
+│   │   ├── 69
+│   │   │   └── f67e0b003c34c6e07c32fa2b827663375ea344
+│   │   ├── a0
+│   │   │   └── 6f4ac4b14e68b0bc0e524da4b9ea15dafe65b5
+│   │   ├── d4
+│   │   │   └── a2136f148ae95157cea0c10d6275bf88b6a8c5
+│   │   ├── db
+│   │   │   └── 395bcfec2f3ea66c43f8f445224749b3f9a659
+│   │   ├── info
+│   │   └── pack
+│   │       ├── pack-174e433d82a54ae8a499b62005fc2818316bef00.idx
+│   │       ├── pack-174e433d82a54ae8a499b62005fc2818316bef00.pack
+│   │       └── pack-174e433d82a54ae8a499b62005fc2818316bef00.rev
+│   ├── packed-refs
+│   └── refs
+│       ├── heads
+│       │   ├── decomposer-botjs
+│       │   └── master
+│       ├── remotes
+│       │   └── origin
+│       │       ├── decomposer-botjs
+│       │       └── HEAD
+│       └── tags
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── README.md
+├── src
+│   ├── bot.js
+│   ├── config.js
+│   ├── firebase.js
+│   ├── handlers
+│   │   ├── callbackHandler.js
+│   │   ├── messageHandler.js
+│   │   └── startHandler.js
+│   ├── services
+│   │   ├── firebaseService.js
+│   │   └── responseService.js
+│   └── utils
+│       └── safeSend.js
+└── structure.txt
+
