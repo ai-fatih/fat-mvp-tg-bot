@@ -1,7 +1,7 @@
 // src/utils/chatUtils.js
 import { getChatState, setChatState } from './chatState.js';
 import { bot } from '../bot.js';
-import { clearServiceMessages } from './clearServiceMessages.js';
+import { clearChatExceptImportant } from './clearServiceMessages.js';
 
 export async function updateQuestionsList(chatId, deleteOld = true) {
   const state = getChatState(chatId);
@@ -32,8 +32,8 @@ export async function updateQuestionsList(chatId, deleteOld = true) {
     }
 
     // Удаляем старые служебные сообщения (если нужно)
-    if (deleteOld && state.serviceMsgIds) {
-        await clearServiceMessages(chatId); // Используем новую функцию
+    if (deleteOld) {
+        await clearChatExceptImportant(bot, chatId); // Используем новую функцию
     }
   } catch (err) {
     console.error('[QUESTIONS] Ошибка обновления списка:', err);

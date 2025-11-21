@@ -2,7 +2,7 @@
 import { getChatState, setChatState } from './chatState.js';
 import { bot } from '../bot.js';
 
-export async function clearServiceMessages(chatId) {
+export async function clearChatExceptImportant(bot, chatId) {
     const state = getChatState(chatId);
   
     try {
@@ -14,8 +14,8 @@ export async function clearServiceMessages(chatId) {
           } catch (err) {
             console.warn(`[CLEANUP] Не удалось удалить сообщение ${msgId}:`, err.message);
             // Опционально: повторить попытку через 1 сек
-            // await new Promise(resolve => setTimeout(resolve, 1000));
-            // await bot.deleteMessage(chatId, msgId);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await bot.deleteMessage(chatId, msgId);
           }
         }
         setChatState(chatId, 'serviceMsgIds', []);
