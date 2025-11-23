@@ -7,6 +7,7 @@ export async function clearChatExceptImportant(bot, chatId) {
   
     try {
       if (state.serviceMsgIds?.length) {
+        console.log(state.serviceMsgIds)
         for (const msgId of state.serviceMsgIds) {
           try {
             await bot.deleteMessage(chatId, msgId);
