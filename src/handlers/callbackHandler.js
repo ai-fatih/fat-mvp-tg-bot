@@ -17,23 +17,43 @@ async function callbackHandler(bot, msg) {
         if (!state.temp_question) {
           throw new Error('Временный вопрос не найден');
         }
-        
-        state.questions.push(state.temp_question);
+         
         state.serviceMsgIds.push(userMsgId);
         setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
-        setChatState(chatId, 'questions', state.questions);
+
+         // Проверяем максимальное количество вопросов
+    if (state.questions.length >= 20) {
+      throw new Error('Превышено максимальное количество вопросов (20)');
+    }
+    // Генерируем уникальный ID для нового вопроса
+    const newQuestionId = state.questions.length + 1;
+    
+    // Создаем новый объект вопроса
+    const newQuestion = {
+      id: newQuestionId,
+      question: state.temp_question,
+      answer: null,
+      files: [],
+      edited: false
+    };
+         // Добавляем вопрос в список
+    state.questions.push(newQuestion);
+    
+    // Сохраняем обновленное состояние
+    setChatState(chatId, 'questions', state.questions);
+    
         setChatState(chatId, 'temp_question', null);
           
         await updateQuestionsList(chatId); 
         
       } catch (err) {
         console.error("[CONFIRM] Ошибка при подтверждении вопроса:", err);
-        await safeSend(bot, chatId, 'Произошла ошибка при добавлении вопроса.');
+        console.error('Произошла ошибка при добавлении вопроса.');
       }
     }
   } catch (err) {
     console.error("[CALLBACK] Общая ошибка:", err);
-    await safeSend(bot, chatId, 'Произошла ошибка при обработке запроса.');
+    console.error('Произошла ошибка при обработке запроса.');
   }
 }
 

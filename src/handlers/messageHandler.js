@@ -45,7 +45,7 @@ export async function messageHandler(bot, msg) {
 
   // Отправляем сообщение с подтверждением
   await safeSend(bot, chatId, 
-    `Вы написали: "${text}"\n\nОтправить этот вопрос в список обработки?`,
+    `<i> - "${text}"</i>\n\n<b>добавить ваш вопрос в список для обработки</b>`,
     { reply_markup: createConfirmKeyboard() }
   );
   

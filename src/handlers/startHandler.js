@@ -16,17 +16,17 @@ export async function startHandler(bot, msg) {
     await safeSend(
       bot, 
       chatId, 
-      `Добро пожаловать!\n\n<b>Напишите</b> в свободной форме <b>первый вопрос . . .</b>`
+      `Добро пожаловать!\n<b>Напишите первый вопрос . . .</b>`
     ); 
     
     // Сохраняем полное сообщение
     setChatState(chatId, 'chat_id', chatId)
     
-  state.serviceMsgIds.push(userMsgId);
-  setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
+    state.serviceMsgIds.push(userMsgId);
+    setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
 
     // Выводим состояние именно для этого чата
-    console.log('Состояние после /start:', getChatState(chatId));
+    console.log('serviceMsgIds', state.serviceMsgIds, 'Состояние после /start:', getChatState(chatId));
   } catch (err) {
     console.error("[START] Ошибка:", err);
   }
