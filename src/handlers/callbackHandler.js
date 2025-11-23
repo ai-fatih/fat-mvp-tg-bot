@@ -2,6 +2,7 @@
 import { safeSend } from '../utils/safeSend.js'; 
 import { getChatState, setChatState } from '../utils/chatState.js';
 import { updateQuestionsList } from '../utils/chatUtils.js';
+import { clearChatExceptImportant } from '../utils/clearServiceMessages.js';
 
 async function callbackHandler(bot, msg) {
   const chatId = msg.message.chat.id;
@@ -43,14 +44,27 @@ async function callbackHandler(bot, msg) {
     setChatState(chatId, 'questions', state.questions);
     
         setChatState(chatId, 'temp_question', null);
-          
+        try {
+          await bot.deleteMessage(chatId, state.welcomeMsgId + 1); 
+        } catch (error) { 
+        }
+         
         await updateQuestionsList(chatId); 
         
       } catch (err) {
         console.error("[CONFIRM] Ошибка при подтверждении вопроса:", err);
         console.error('Произошла ошибка при добавлении вопроса.');
       }
+    } 
+
+    if (data === 'cancel_question') {
+
+      state.serviceMsgIds.push(userMsgId);
+      setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
+      setChatState(chatId, 'temp_question', null);
+      await clearChatExceptImportant(bot, chatId); // Используем новую функцию
     }
+
   } catch (err) {
     console.error("[CALLBACK] Общая ошибка:", err);
     console.error('Произошла ошибка при обработке запроса.');

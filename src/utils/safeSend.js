@@ -11,13 +11,14 @@ export async function safeSend(bot, chatId, text, options = {}) {
           ...options,
           parse_mode: 'HTML'  // Для жирного текста в подтверждении
         }); 
-
         setChatState(chatId, 'lastBotMessageId', sentMessage.message_id);
         
-        state.serviceMsgIds.push(sentMessage.message_id);
-        setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
- 
-        console.log(`[SEND] message_id=${sentMessage.message_id}`, state.serviceMsgIds); 
+        if ((sentMessage.message_id - state.welcomeMsgId - 1) != 0) {
+          state.serviceMsgIds.push(sentMessage.message_id);
+          setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
+        }
+
+        console.log(`[SEND] message_id=${sentMessage.message_id}`); 
 
         return sentMessage;
       } catch (err) {

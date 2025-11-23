@@ -32,13 +32,7 @@ export async function messageHandler(bot, msg) {
                     text: 'Нет',
                     callback_data: 'cancel_question'
                 }
-            ],
-            [
-                {
-                    text: 'Редактировать вопрос',
-                    callback_data: 'edit_question'
-                }
-            ]
+            ] 
         ]
     };
 }

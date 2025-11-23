@@ -11,20 +11,21 @@ export async function startHandler(bot, msg) {
 
   try {
     await createOrUpdateUser({ telegramId: chatId, username });
-
-    // Отправляем приветственное сообщение
-    await safeSend(
-      bot, 
-      chatId, 
-      `Добро пожаловать!\n<b>Напишите первый вопрос . . .</b>`
-    ); 
-    
+  
     // Сохраняем полное сообщение
     setChatState(chatId, 'chat_id', chatId)
     
     state.serviceMsgIds.push(userMsgId);
     setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
+    setChatState(chatId, 'welcomeMsgId', userMsgId);
 
+     // Отправляем приветственное сообщение
+     await safeSend(
+      bot, 
+      chatId, 
+      `Добро пожаловать!\n<b>Напишите первый вопрос . . .</b>`
+    ); 
+    
     // Выводим состояние именно для этого чата
     console.log('serviceMsgIds', state.serviceMsgIds, 'Состояние после /start:', getChatState(chatId));
   } catch (err) {

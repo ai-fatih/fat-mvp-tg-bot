@@ -48,13 +48,14 @@ export async function updateQuestionsList(chatId, deleteOld = true) {
         chat_id: chatId,
         message_id: state.questionsMsgId,
         parse_mode: 'HTML',
-        reply_markup: createConfirmKeyboard()
+       // reply_markup: createConfirmKeyboard()
       });
       console.log(`[QUESTIONS] Список обновлён (ID: ${state.questionsMsgId})`);
     } else {
       // Отправляем новое сообщение
       const msg = await bot.sendMessage(chatId, text,  { parse_mode: 'HTML',
-        reply_markup: createConfirmKeyboard() });
+        // reply_markup: createConfirmKeyboard() 
+      });
       setChatState(chatId, 'questionsMsgId', msg.message_id);
       console.log(`[QUESTIONS] Новый список (ID: ${msg.message_id})`);
     }

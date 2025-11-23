@@ -19,7 +19,6 @@ export async function clearChatExceptImportant(bot, chatId) {
             const index = state.serviceMsgIds.indexOf(msgId);
             if (index !== -1) {
               state.serviceMsgIds.splice(index, 1);
-              setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
             }
             
           } catch (err) {
@@ -36,13 +35,20 @@ export async function clearChatExceptImportant(bot, chatId) {
               const index = state.serviceMsgIds.indexOf(msgId);
               if (index !== -1) {
                 state.serviceMsgIds.splice(index, 1);
-                setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
               }
             } catch (retryErr) {
               console.error(`[CLEANUP] Повторная попытка удаления ${msgId} не удалась:`, retryErr.message);
             }
           }
         }
+
+           // Обновляем состояние только с успешно удаленными сообщениями
+    const updatedIds = state.serviceMsgIds.filter(id => !msgIdsCopy.includes(id));
+    
+    // Сохраняем обновленное состояние
+    setChatState(chatId, 'serviceMsgIds', updatedIds);
+    
+        console.log('после удаления', state.serviceMsgIds)
       }
     } catch (err) {
       console.error('[CLEANUP] Критическая ошибка при очистке сообщений:', err);
