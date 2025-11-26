@@ -1,21 +1,17 @@
+// src/bot/bot.js
 import TelegramBot from 'node-telegram-bot-api';
-import { config } from '../config/config.js';
-import { startHandler } from './handlers/startHandler.js';
-import { messageHandler } from './handlers/messageHandler.js';
-import { setupCallbackHandler } from './handlers/callbackHandler.js'; 
 
-//Создаётся экземпляр Telegram‑бота с токеном из .env.
-export const bot = new TelegramBot(config.TELEGRAM_BOT_TOKEN, { polling: true });
-//Настраиваются слушатели:
-bot.onText(/\/start/, (msg) => startHandler(bot, msg)); 
+/**
+ * Создаёт экземпляр Telegram бота
+ * @param {string} token - токен бота
+ * @param {Object} options - настройки бота (polling, debug и т.д.)
+ */
+export const createBot = (token, options = {}) => {
+  const bot = new TelegramBot(token, { polling: options.polling ?? true });
 
-bot.on("message", (msg) => messageHandler(bot, msg));
+  if (options.debug) {
+    console.log("Bot config:", options);
+  }
 
-setupCallbackHandler(bot);
-
-//Запускается polling (постоянное ожидание сообщений).
-bot.on("polling_error", (err) => console.error("[POLLING ERROR]", err));
-
-//Результат: бот онлайн и ждёт команд.
-console.log("Bot is running...");
-  
+  return bot;
+};

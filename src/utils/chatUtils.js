@@ -1,6 +1,6 @@
 // src/utils/chatUtils.js
 import { getChatState, setChatState } from './chatState.js';
-import { bot } from '../bot.js';
+import { bot } from '../bot/index.js'
 import { clearChatExceptImportant } from './clearServiceMessages.js';
 
 export async function updateQuestionsList(chatId, deleteOld = true) {

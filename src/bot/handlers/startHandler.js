@@ -1,6 +1,6 @@
-import { createOrUpdateUser } from '../services/firebaseService.js';
-import { safeSend } from '../utils/safeSend.js';
-import { getChatState, setChatState } from '../utils/chatState.js';
+// import { createOrUpdateUser } from '../services/firebaseService.js';
+import { safeSend } from '../../utils/safeSend.js';
+import { getChatState, setChatState } from '../../utils/chatState.js';
 
 export async function startHandler(bot, msg) {
   const chatId = msg.chat.id;
@@ -10,7 +10,7 @@ export async function startHandler(bot, msg) {
   const state = getChatState(chatId);
 
   try {
-    await createOrUpdateUser({ telegramId: chatId, username });
+   // await createOrUpdateUser({ telegramId: chatId, username });
   
     // Сохраняем полное сообщение
     setChatState(chatId, 'chat_id', chatId)

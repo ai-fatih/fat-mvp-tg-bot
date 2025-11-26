@@ -1,6 +1,5 @@
 // src/utils/clearServiceMessages.js
 import { getChatState, setChatState } from './chatState.js';
-import { bot } from '../bot.js';
 
 export async function clearChatExceptImportant(bot, chatId) {
     const state = getChatState(chatId);

@@ -1,13 +1,15 @@
-import 'dotenv/config';
+// src/config/config.js
+import { ENV } from './environment.js';
+import { CONSTANTS } from './constants.js';
+import { botConfig } from '../bot/botConfig.js';
 
 /**
- * Конфигурация приложения
- * @type {Object}
+ * Основной конфиг приложения
  */
 export const config = {
-  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
-  DOCS_URL: process.env.DOCS_URL || 'https://docs.rkeeper.ru/sh5/',
-  NODE_ENV: process.env.NODE_ENV || 'development',
+  ...ENV,
+  CONSTANTS, 
+  botConfig, // опционально, если хочешь использовать botConfig через глобальный config
 };
 
 // Валидация критических параметров
@@ -17,7 +19,6 @@ if (!config.TELEGRAM_BOT_TOKEN) {
   );
 }
 
-// Дополнительно: проверка режима
 if (config.NODE_ENV === 'production' && !config.TELEGRAM_BOT_TOKEN) {
   throw new Error('В продакшене обязателен TELEGRAM_BOT_TOKEN!');
 }

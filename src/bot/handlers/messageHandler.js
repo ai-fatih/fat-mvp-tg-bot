@@ -1,7 +1,7 @@
 // src/handlers/messageHandler.js
 
-import { getChatState, setChatState } from '../utils/chatState.js';
-import { safeSend } from '../utils/safeSend.js';
+import { getChatState, setChatState } from '../../utils/chatState.js';
+import { safeSend } from '../../utils/safeSend.js';
 // import { createOrUpdateUser, saveUserMessage } from '../services/firebaseService.js';
 // import { updateQuestionsList } from '../utils/chatUtils.js';
 // import { clearChatExceptImportant } from '../utils/clearServiceMessages.js';
