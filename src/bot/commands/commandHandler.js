@@ -1,5 +1,5 @@
 // src/handlers/commandHandler.js
-import { safeSend } from '../utils/safeSend.js';
+import { safeSend } from '../../utils/safeSend.js';
 
 export async function commandHandler(bot, msg) {
   const chatId = msg.chat.id;

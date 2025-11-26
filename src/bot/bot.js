@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { config } from './config.js';
+import { config } from '../config/config.js';
 import { startHandler } from './handlers/startHandler.js';
 import { messageHandler } from './handlers/messageHandler.js';
 import { setupCallbackHandler } from './handlers/callbackHandler.js'; 

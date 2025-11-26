@@ -7,14 +7,15 @@ export async function updateQuestionsList(chatId, deleteOld = true) {
   const state = getChatState(chatId);
   const questions = state.questions || [];
   if (state.questions.length >= 20) return false;
-    
+ 
   // Формируем текст списка
-  let text = `<b>📋 Здесь ваши вопросы:</b>\n${state.questions.length} из 20\n\n`;
-  questions.forEach((q) => {
+  let text = `<b>📋 Ваши вопросы</b> (${state.questions.length} из 20)\n\n`
+   questions.forEach((q) => {
     text += `<i>${q.id}. ${q.question}\n</i>`;
     if (q.answer) text += `Ответ: ${q.answer}\n\n`; 
-  });
-  text += `\n`;
+  });  
+  text += `\n📋 Ожидайте, пожалуйста, менеджер с вами свяжется!`;
+    
 
    // Формируем клавиатуру подтверждения
   function createConfirmKeyboard() {
