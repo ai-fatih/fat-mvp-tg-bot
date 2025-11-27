@@ -52,3 +52,4 @@ try {
 }
  
 export { db };
+export const firebaseApp = app; // для Storage или Auth

@@ -27,3 +27,14 @@ src/bot/index.js — инициализация бота, регистрация
 src/bot/bot.js — создаёт экземпляр бота, принимает botConfig.
 src/config/ — глобальные параметры и константы.
 .env — содержит TELEGRAM_BOT_TOKEN и другие необходимые переменные.
+
+
+services/
+├── firebase.js              // инициализация Firebase
+├── firebaseService/
+│   ├── index.js             // основной экспорт
+│   ├── FirebaseService.js   // фасад, объединяет сервисы
+│   ├── UserService.js       // работа с пользователями
+│   └── MessageService.js    // работа с сообщениями
+
+
