@@ -32,12 +32,12 @@ export async function messageHandler(bot, msg) {
             { reply_markup: keyboard }
         );
 
-        // Сохраняем контекст
-        chatState.serviceMsgIds.push(userMsgId);
-        state.setState(chatId, 'serviceMsgIds', chatState.serviceMsgIds);
-        state.setState(chatId, 'chat_id', chatId);
+        // Сохраняем контекст   
+        chatState.serviceMsgId.push(userMsgId);
+        state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId);
+        state.setState(chatId, 'chatId', chatId);
         state.setState(chatId, 'lastUserMessageId', userMsgId);
-        state.setState(chatId, 'temp_question', text);
+        state.setState(chatId, 'tempQuestion', text);
 
         console.log(`[messageHandler] Обновлённое состояние:`, state.getState(chatId));
 

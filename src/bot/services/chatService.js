@@ -58,12 +58,13 @@ export class ChatService {
     const questions = chatState.questions || [];
 
     // Формируем текст
-    let text = `${headers.questions()} (${questions.length} из 20)\n\n`;
-    questions.forEach(q => {
-      text += `${fmt.italic(q.id + '. ' + q.question)}\n`;
-      if (q.answer) text += `Ответ: ${q.answer}\n`;
-    });
-    text += `\n${headers.waiting()}`;
+        let text = `${headers.questions(questions.length)}\n\n`;
+        questions.forEach(q => {
+          text += `<b>— вопрос:</b> ${q.question}\n`;
+          q.answer ? text += `<b>— Ответ:</b> ${q.answer}\n\n`
+          : text += `<b>— Ответ:</b> в обработке\n\n`
+        });
+        text += `\n${headers.waiting()}`;
 
     try {
       if (chatState.questionsMsgId) {

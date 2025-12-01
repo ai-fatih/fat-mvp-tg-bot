@@ -75,7 +75,7 @@ state.clearChatState(chatId);
 
 * `questions` — список набранных вопросов
 * `temp_question` — временный вопрос
-* `serviceMsgIds` — служебные сообщения для удаления
+* `serviceMsgId` — служебные сообщения для удаления
 * `questionsMsgId` — id сообщения со списком
 * `lastUserMessageId`, `lastBotMessageId` — последние сообщения
 * `welcomeMsgId` — стартовые сообщения

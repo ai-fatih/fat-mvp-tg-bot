@@ -1,121 +1,145 @@
-// chatState.js
 /**
- * ChatState — менеджер временного состояния чатов
+ * ChatState — менеджер временного состояния чатов.
  * Хранит краткосрочные данные:
- * - временный вопрос
- * - id сервисных сообщений
- * - последние сообщения пользователя/бота
  * - список вопросов до записи в Firebase
- * - id сообщений со списками
+ * - сервисные сообщения, которые нужно удалить
+ * - последний ID сообщения пользователя
+ * - черновик вопроса
+ * - статус потока (WELCOME → FIRST → ACTIVE → ...)
  *
- * Данные хранятся в памяти (Map), очищаются только при рестарте бота.
+ * Хранится в памяти (Map).
+ * Очищается только при рестарте бота.
  */
 
 class ChatState {
-    constructor() {
-      this.state = new Map(); // { chatId: { ...state } }
+  constructor() {
+    this.state = new Map(); // { chatId: { ...state } }
+  }
+
+  /**
+   * Получить состояние.
+   * Если нет — создаём по умолчанию.
+   */
+  get(chatId) {
+    if (!this.state.has(chatId)) {
+      this.state.set(chatId, this._defaultState(chatId));
     }
-  
-    /**
-     * Получение состояния конкретного чата
-     * Если чата нет — создаём структуру по умолчанию
-     */
-    get(chatId) {
-      if (!this.state.has(chatId)) {
-        this.state.set(chatId, this._defaultState());
-      }
-      return this.state.get(chatId);
-    }
-  
-    /**
-     * Установка произвольного поля
-     * Пример:
-     * chatState.set(123, "temp_question", "Как провести списание?");
-     */
-    set(chatId, key, value) {
-      const chat = this.get(chatId);
-      chat[key] = value;
-    }
-  
-    /**
-     * Добавить сервисное сообщение (чтобы потом удалить)
-     * Пример:
-     * chatState.addServiceMsgId(chatId, messageId);
-     */
-    addServiceMsgId(chatId, messageId) {
-      const chat = this.get(chatId);
-      chat.serviceMsgIds.push(messageId);
-    }
-  
-    /**
-     * Очистить все сервисные сообщения
-     * (используется при переходе между экранами)
-     */
-    clearServiceMessages(chatId) {
-      const chat = this.get(chatId);
-      chat.serviceMsgIds = [];
-    }
-  
-    /**
-     * Сохранить временный вопрос (до записи в Firebase)
-     */
-    setTempQuestion(chatId, text) {
-      this.set(chatId, "temp_question", text);
-    }
-  
-    /**
-     * Получить временный вопрос
-     */
-    getTempQuestion(chatId) {
-      return this.get(chatId).temp_question;
-    }
-  
-    /**
-     * Установить последний вопрос пользователя
-     * (может пригодиться для диалогов)
-     */
-    setLastUserMessage(chatId, msgId) {
-      this.set(chatId, "lastUserMessageId", msgId);
-    }
-  
-    /**
-     * Полная очистка состояния чата (но не Map целиком)
-     */
-    reset(chatId) {
-      this.state.set(chatId, this._defaultState());
-    }
-  
-    /**
-     * Полная очистка всех чатов (при необходимости)
-     */
-    clearAll() {
-      this.state.clear();
-    }
-  
-    /**
-     * Базовая структура состояния
-     * (повторяет старый стейт, но аккуратно)
-     */
-    _defaultState() {
-      return {
-        chat_id: null,
-  
-        questions: [],          // список набранных вопросов
-        questionsMsg: null,     // сообщение со списком вопросов
-        questionsMsgId: null,   // id сообщения со списком вопросов
-  
-        serviceMsgIds: [],      // временные "лишние" сообщения
-  
-        lastUserMessageId: null,
-        lastBotMessageId: null,
-  
-        lastUserQuestion: null, // последнее отправленное пользователем сообщение
-        temp_question: null,    // временный вопрос перед подтверждением
-  
-        welcomeMsg: null,
-        welcomeMsgId: null,
-      };
+    return this.state.get(chatId);
+  }
+
+  /**
+   * Установить любое поле.
+   */
+  set(chatId, key, value) {
+    const chat = this.get(chatId);
+    chat[key] = value;
+    chat.updatedAt = Date.now();
+  }
+
+  /**
+   * Добавить ID сервисного сообщения (для последующего удаления).
+   */
+  addServiceMsgId(chatId, messageId) {
+    const chat = this.get(chatId);
+    chat.serviceMsgId.push(messageId);
+    chat.updatedAt = Date.now();
+  }
+
+  /**
+   * Переносим текущий список сервисных сообщений в history
+   * и очищаем активные.
+   */
+  archiveServiceMessages(chatId) {
+    const chat = this.get(chatId);
+
+    if (chat.serviceMsgId.length > 0) {
+      chat.serviceHistory.push([...chat.serviceMsgId]);
+      chat.serviceMsgId = [];
+      chat.updatedAt = Date.now();
     }
   }
-  
-  export const chatState = new ChatState();
+
+  /**
+   * Полное очищение текущих serviceMsgId (без архивации).
+   */
+  clearServiceMessages(chatId) {
+    const chat = this.get(chatId);
+    chat.serviceMsgId = [];
+    chat.updatedAt = Date.now();
+  }
+
+  /**
+   * Работа с временным вопросом.
+   */
+  setTempQuestion(chatId, text) {
+    this.set(chatId, "tempQuestion", text);
+  }
+
+  getTempQuestion(chatId) {
+    return this.get(chatId).tempQuestion;
+  }
+
+  /**
+   * Сохранение последнего сообщения пользователя.
+   */
+  setLastUserMessage(chatId, msgId) {
+    this.set(chatId, "lastUserMessageId", msgId);
+  }
+
+  /**
+   * Полный сброс состояния конкретного чата.
+   */
+  reset(chatId) {
+    this.state.set(chatId, this._defaultState(chatId));
+  }
+
+  /**
+   * Полный сброс ВСЕХ чатов.
+   * Используем только для отладки / админ команд.
+   */
+  clearAll() {
+    this.state.clear();
+  }
+
+  // Установить questionsMsgId (единичное, перезаписываемое)
+setQuestionsMsgId(chatId, messageId) {
+  const chat = this.get(chatId);
+  chat.questionsMsgId = messageId;
+  chat.updatedAt = Date.now();
+}
+
+// Получить questionsMsgId
+getQuestionsMsgId(chatId) {
+  return this.get(chatId).questionsMsgId;
+}
+
+  /**
+   * Базовая структура состояния.
+   * Лаконичная и оптимальная под нашу логику бота:
+   * — вопросы
+   * — сервисные сообщения
+   * — последний user msg
+   * — draft вопрос
+   * — status flow
+   */
+  _defaultState(chatId = null) {
+    return {
+      chatId,
+      questions: [],          // { text, answer?, createdAt }
+      
+      // временные сообщения — удаляем после обновлений экрана
+      serviceMsgId: [],       // массив активных сервисных сообщений
+      serviceHistory: [],     // история массивов serviceMsgId
+      
+      // сообщение со списком вопросов, которое НЕ удаляем (единичное)
+      questionsMsgId: null,   // numeric message_id (или null)
+
+      lastUserMessageId: null,
+      tempQuestion: null,
+      status: null,           // ENUM: WELCOME | FIRST | ACTIVE | LIMIT | SENT | CLEARED | RESUMED
+      updatedAt: Date.now()
+    };
+  }
+}
+
+export const chatState = new ChatState();

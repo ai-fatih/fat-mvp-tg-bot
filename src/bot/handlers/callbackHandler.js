@@ -1,9 +1,10 @@
-import { telegram, helpers, state } from '../../utils/index.js'; 
+import { telegram, state } from '../../utils/index.js'; 
 import { chatService } from '../services/chatService.js';
 
 async function callbackHandler(bot, msg) {
     const chatId = msg.message.chat.id;
     const data = msg.data;
+
     const chatState = state.getState(chatId);
 
     try {
@@ -12,13 +13,13 @@ async function callbackHandler(bot, msg) {
         // ============================================================
         if (data === 'confirm_question') {
             try {
-                if (!chatState.temp_question) {
+                if (!chatState.tempQuestion) {
                     throw new Error('Временный вопрос отсутствует');
                 }
 
                 // Сохраняем служебное сообщение
-                chatState.serviceMsgIds.push(msg.message.message_id);
-                state.setState(chatId, 'serviceMsgIds', chatState.serviceMsgIds);
+                chatState.serviceMsgId.push(msg.message.message_id);
+                state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId);
 
                 // --- Ограничение по количеству ---
                 if (chatState.questions.length >= 20) {
@@ -28,7 +29,7 @@ async function callbackHandler(bot, msg) {
                 // --- Формируем модель вопроса ---
                 const newQuestion = {
                     id: chatState.questions.length + 1,
-                    question: chatState.temp_question,
+                    question: chatState.tempQuestion,
                     answer: null,
                     files: [],
                     edited: false,
@@ -39,12 +40,7 @@ async function callbackHandler(bot, msg) {
                 state.setState(chatId, 'questions', chatState.questions);
 
                 // --- Очищаем временное поле ---
-                state.setState(chatId, 'temp_question', null);
-
-                // --- Пытаемся удалить сообщение подтверждения ---
-                /* try {
-                    await bot.deleteMessage(chatId, chatState.welcomeMsgId + 1);
-                } catch {} */
+                state.setState(chatId, 'tempQuestion', null);
 
                 // --- Перерисовываем список вопросов ---
                 await chatService.updateQuestionsList(bot, chatId);
@@ -58,11 +54,11 @@ async function callbackHandler(bot, msg) {
         // ============================================================
         if (data === 'cancel_question') {
             // Сохраняем служебный ID
-            chatState.serviceMsgIds.push(msg.message.message_id);
-            state.setState(chatId, 'serviceMsgIds', chatState.serviceMsgIds);
+            chatState.serviceMsgId.push(msg.message.message_id);
+            state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId);
 
             // Чистим временное поле
-            state.setState(chatId, 'temp_question', null);
+            state.setState(chatId, 'tempQuestion', null);
 
             // Очищаем чат
             await telegram.clearServiceMessages(bot, chatId);
@@ -74,7 +70,7 @@ async function callbackHandler(bot, msg) {
         // if (data === 'edit_question') { ... }
         // if (data === 'delete_question') { ... }
         // if (data === 'send_question') { ... }
-
+ 
     } catch (err) {
         console.error("[CALLBACK] Общая ошибка:", err);
     }

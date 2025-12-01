@@ -21,25 +21,24 @@ export async function startHandler(bot, msg) {
         // await firebaseService.createOrUpdateUser({ telegramId: chatId, username });
 
         // Инициализируем chatId
-        state.setState(chatId, 'chat_id', chatId);
+        state.setState(chatId, 'chatId', chatId);
 
         // Добавляем ID пользователя в служебные сообщения
-        chatState.serviceMsgIds.push(userMsgId);
-        chatState.serviceMsgIds.push(userMsgId + 1);
-        state.setState(chatId, 'serviceMsgIds', chatState.serviceMsgIds); 
-        state.setState(chatId, 'welcomeMsgId', userMsgId);
+        chatState.serviceMsgId.push(userMsgId);
+        state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId); 
+        state.setState(chatId, 'questionsMsgId', userMsgId + 1);
 
         // Отправляем приветственное сообщение через сервис
         await messageService.sendMessage(
             bot,
             chatId,
-            `Добро пожаловать!\n<b>Напишите первый вопрос . . .</b>`
+            `Добро пожаловать!\n<b>Напишите первый вопрос</b>`
         );
 
         // Логируем состояние чата после /start
         console.log(
-            'serviceMsgIds', 
-            chatState.serviceMsgIds, 
+            'serviceMsgId', 
+            chatState.serviceMsgId, 
             'Состояние после /start:', 
             state.getState(chatId)
         );
