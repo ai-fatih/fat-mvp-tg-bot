@@ -38,3 +38,20 @@ services/
 │   └── MessageService.js    // работа с сообщениями
 
 
+UTILS
+/utils/index.js
+├── экспортирует всё из:
+│   ├── /state
+│   │   ├── chatState.js          <- Map состояния чатов
+│   │   └── stateHelpers.js      <- функции get/set/reset service messages
+│   ├── /helpers
+│   │   ├── timer.js             <- wait, waitRandom, botTyping
+│   │   ├── logger.js            <- debug, warn, error, cleanup
+│   │   ├── arrayUtils.js        <- фильтры и сортировки (пока не используется)
+│   │   └── textUtils.js         <- нормализация текста (пока не используется)
+│   └── /telegram
+│       ├── safeSend.js          <- safeSend, safeEdit (использует botTyping + logger)
+│       ├── clearServiceMessages.js <- чистка service messages (использует stateHelpers + logger)
+│       ├── chatUtils.js         <- updateQuestionsList (использует safeSend, safeEdit, clearServiceMessages, keyboards, fmt/headers)
+│       ├── formatMessage.js     <- fmt, headers
+│       └── keyboards.js         <- функции генерации inline клавиатур

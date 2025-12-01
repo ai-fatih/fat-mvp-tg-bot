@@ -45,7 +45,7 @@ export const list = {
  */
 export const headers = {
     questions: () => `<b>📋 Ваши вопросы</b>`,
-    waiting: () => `<i>Ожидайте, менеджер скоро свяжется.</i>`,
+    waiting: () => `<i>Ожидайте, менеджер скоро ответит.</i>`,
     welcome: () => `<b>👋 Добро пожаловать!</b>`,
     success: (t = "Готово") => `✅ <b>${t}</b>`,
     error: (t = "Ошибка") => `❌ <b>${t}</b>`,
@@ -123,8 +123,7 @@ export default {
     list,
     headers,
     formatDate,
-    keyboard,
-
+    
     // основные шаблоны
     buildQuestionsList,
     buildWelcomeMessage,

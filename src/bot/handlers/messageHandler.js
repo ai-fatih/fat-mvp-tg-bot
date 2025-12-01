@@ -1,58 +1,47 @@
-// src/handlers/messageHandler.js
+// src/bot/handlers/messageHandler.js
 
-import { getChatState, setChatState } from '../../utils/chatState.js';
-import { safeSend } from '../../utils/safeSend.js';
-// import { createOrUpdateUser, saveUserMessage } from '../services/firebaseService.js';
-// import { updateQuestionsList } from '../utils/chatUtils.js';
-// import { clearChatExceptImportant } from '../utils/clearServiceMessages.js';
+import { state, telegram } from '../../utils/index.js';
+import { messageService } from '../services/messageService.js'; 
+import { chatService } from '../services/chatService.js';
 
+/**
+ * Обработчик входящих текстовых сообщений
+ * - Показывает подтверждение "Добавить вопрос?"
+ * - Хранит временный вопрос (temp_question)
+ * - Запоминает ID сообщения пользователя
+ */
 export async function messageHandler(bot, msg) {
-  const chatId = msg.chat.id;
-  const text = msg.text;
-  console.log('my chat id', chatId)
-  if (!text || text.startsWith('/')) return;
+    const chatId = msg.chat.id;
+    const text = msg.text;
 
-  const userMsgId = msg.message_id;
-  const state = getChatState(chatId);
+    // игнорируем команды
+    if (!text || text.startsWith('/')) return;
 
-  try {
-  //  await createOrUpdateUser({ telegramId: chatId, username: msg.from.username || msg.from.first_name });
-  //  await saveUserMessage({ telegramId: chatId, text });
+    const userMsgId = msg.message_id;
+    const chatState = state.getState(chatId);
 
-  // Формируем клавиатуру подтверждения
-  function createConfirmKeyboard() {
-    return {
-        inline_keyboard: [
-            [
-                {
-                    text: 'Да',
-                    callback_data: 'confirm_question'
-                },
-                {
-                    text: 'Нет',
-                    callback_data: 'cancel_question'
-                }
-            ] 
-        ]
-    };
-}
+    try {
+        // Формируем клавиатуру подтверждения
+        const keyboard = telegram.keyboards.confirmCancel()
 
-  // Отправляем сообщение с подтверждением
-  await safeSend(bot, chatId, 
-    `<i> - "${text}"</i>\n\n<b>добавить ваш вопрос в список для обработки</b>`,
-    { reply_markup: createConfirmKeyboard() }
-  );
-  
-  // Сохраняем временный контекст
-  state.serviceMsgIds.push(userMsgId);
-  setChatState(chatId, 'serviceMsgIds', state.serviceMsgIds);
-  setChatState(chatId, 'chat_id', chatId);
-  setChatState(chatId, 'lastUserMessageId', userMsgId);
-  setChatState(chatId, `temp_question`, text);
+        // Отправляем пользователю подтверждение
+        await messageService.sendMessage(
+            bot,
+            chatId,
+            `<i>- "${text}"</i>\n\n<b>Добавить в список для обработки?</b>`,
+            { reply_markup: keyboard }
+        );
 
-  console.log('чекаем в messageHandler', state)
+        // Сохраняем контекст
+        chatState.serviceMsgIds.push(userMsgId);
+        state.setState(chatId, 'serviceMsgIds', chatState.serviceMsgIds);
+        state.setState(chatId, 'chat_id', chatId);
+        state.setState(chatId, 'lastUserMessageId', userMsgId);
+        state.setState(chatId, 'temp_question', text);
 
-  } catch (err) {
-    console.error("[MESSAGE] Ошибка:", err);
-  }
+        console.log(`[messageHandler] Обновлённое состояние:`, state.getState(chatId));
+
+    } catch (err) {
+        console.error("[MESSAGE] Ошибка:", err);
+    }
 }

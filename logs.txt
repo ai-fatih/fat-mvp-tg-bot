@@ -1,0 +1,4 @@
+[WARN] 2025-12-01T10:42:31.341Z [SEND] попытка 1 для chatId=undefined не удалась: bot.sendMessage is not a function
+[WARN] 2025-12-01T10:42:31.844Z [SEND] попытка 2 для chatId=undefined не удалась: bot.sendMessage is not a function
+[WARN] 2025-12-01T10:42:32.345Z [SEND] попытка 3 для chatId=undefined не удалась: bot.sendMessage is not a function
+[ERROR] 2025-12-01T10:42:32.346Z [SEND] окончательная ошибка отправки сообщения chatId=undefined

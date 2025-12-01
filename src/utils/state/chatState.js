@@ -1,3 +1,4 @@
+// chatState.js
 /**
  * ChatState — менеджер временного состояния чатов
  * Хранит краткосрочные данные:
@@ -118,4 +119,3 @@ class ChatState {
   }
   
   export const chatState = new ChatState();
-  

@@ -31,7 +31,7 @@ export const waitRandom = (min, max) => {
 
  
 export async function botTyping(bot, chatId, duration = 2000) {
-    const interval = 4000; // Telegram сбрасывает через ~5 секунд
+    const interval = 2000; // Telegram сбрасывает через ~5 секунд
     const cycles = Math.ceil(duration / interval);
 
     for (let i = 0; i < cycles; i++) {

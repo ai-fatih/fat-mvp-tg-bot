@@ -1,5 +1,4 @@
 // /utils/telegram/safeSend.js
-import { botTyping } from './timer.js';
 import { logger } from '../helpers/logger.js';
 
 /**
@@ -16,8 +15,7 @@ export async function safeSend(bot, chatId, text, options = {}, retries = 3) {
     let sentMessage = null;
 
     for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            await botTyping(bot, chatId)
+        try { 
             sentMessage = await bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML', // HTML по умолчанию
                 ...options,
