@@ -1,6 +1,6 @@
 // src/bot/handlers/startHandler.js
 import { state } from '../../utils/index.js';
-import { messageService } from '../services/messageService.js';
+import { chatService } from '../services/chatService.js';
 
 /**
  * Обработчик команды /start
@@ -29,11 +29,14 @@ export async function startHandler(bot, msg) {
         state.setState(chatId, 'questionsMsgId', userMsgId + 1);
 
         // Отправляем приветственное сообщение через сервис
-        await messageService.sendMessage(
+        /* await messageService.sendMessage(
             bot,
             chatId,
             `Добро пожаловать!\n<b>Напишите первый вопрос</b>`
-        );
+        ); */
+        
+        // --- Перерисовываем список вопросов ---
+            await chatService.updateQuestionsList(bot, chatId);
 
         // Логируем состояние чата после /start
         console.log(

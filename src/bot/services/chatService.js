@@ -1,5 +1,7 @@
 // chatService.js
 import { state, telegram, helpers } from '../../utils/index.js';
+import { determineStatus } from './message/determineStatus.js';
+import { buildServiceMessage } from './message/buildServiceMessage.js';
 
 const { safeSend, safeEdit, clearServiceMessages, fmt, headers } = telegram;
 
@@ -11,6 +13,7 @@ const { safeSend, safeEdit, clearServiceMessages, fmt, headers } = telegram;
  * - получение текущих вопросов
  */
 export class ChatService {
+
   /**
    * Добавить вопрос в состояние чата
    * @param {number|string} chatId 
@@ -54,27 +57,21 @@ export class ChatService {
    * @param {boolean} deleteOld - удалять ли старые служебные сообщения
    */
   async updateQuestionsList(bot, chatId, options = {}, deleteOld = true) {
-    const chatState = state.getState(chatId);
-    const questions = chatState.questions || [];
-
-    // Формируем текст
-        let text = `${headers.questions(questions.length)}\n\n`;
-        questions.forEach(q => {
-          text += `<b>— вопрос:</b> ${q.question}\n`;
-          q.answer ? text += `<b>— Ответ:</b> ${q.answer}\n\n`
-          : text += `<b>— Ответ:</b> в обработке\n\n`
-        });
-        text += `\n${headers.waiting()}`;
-
+    const chatState = state.getState(chatId); 
+ 
+        const status = determineStatus(chatState); 
+        const text = buildServiceMessage(status, chatState.questions);
+        
+        let m
     try {
-      if (chatState.questionsMsgId) {
-        // Редактируем существующее сообщение
-        await safeEdit(bot, chatId, chatState.questionsMsgId, text, options);
-      } else {
-        // Отправляем новое сообщение
-        const msg = await safeSend(bot, chatId, text, options);
-        state.setState(chatId, 'questionsMsgId', msg.message_id);
-      }
+      
+      // Редактируем существующее или отправляем новое сообщение если не удалось редактирование
+        await safeEdit(bot, chatId, chatState.questionsMsgId, text, options) ?
+      '' : ( 
+        m = await safeSend(bot, chatId, text, options),
+        state.setState(chatId, 'questionsMsgId', m.message_id)
+      )
+      
 
       // Очистка служебных сообщений
       if (deleteOld) await clearServiceMessages(bot, chatId);
