@@ -28,7 +28,7 @@ export async function messageHandler(bot, msg) {
         await messageService.sendMessage(
             bot,
             chatId,
-            `<i>- "${text}"</i>\n\n<b>Добавить в список для обработки?</b>`,
+            `<b>Ваш вопрос:</b>\n\n<i>- "${text}"</i>\n`,
             { reply_markup: keyboard }
         );
 

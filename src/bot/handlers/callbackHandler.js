@@ -28,12 +28,16 @@ async function callbackHandler(bot, msg) {
 
                 // --- Формируем модель вопроса ---
                 const newQuestion = {
-                    id: chatState.questions.length + 1,
-                    question: chatState.tempQuestion,
-                    answer: null,
-                    files: [],
-                    edited: false,
+                    id: chatState.questions.length + 1, // порядковый номер
+                    question: chatState.tempQuestion,   // текст вопроса
+                    answer: null,                        // ответ менеджера
+                    files: [],                            // прикреплённые файлы
+                    edited: false,                        // редактировался ли вопрос
+                    ready: false,                          // статус готовности ответа
+                    high_priority: false,                  // для будущего
+                    createdAt: new Date().toISOString()   // дата/время создания
                 };
+  
 
                 // --- Сохраняем сохранённый вопрос ---
                 chatState.questions.push(newQuestion);

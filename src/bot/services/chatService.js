@@ -59,19 +59,22 @@ export class ChatService {
   async updateQuestionsList(bot, chatId, options = {}, deleteOld = true) {
     const chatState = state.getState(chatId); 
  
-        const status = determineStatus(chatState); 
-        const text = buildServiceMessage(status, chatState.questions);
-        
-        let m
+    const status = determineStatus(chatState);
+    const { text, reply_markup } = buildServiceMessage(status, chatState.questions);
+  
+    let sentMessage;
+  
     try {
-      
-      // Редактируем существующее или отправляем новое сообщение если не удалось редактирование
-        await safeEdit(bot, chatId, chatState.questionsMsgId, text, options) ?
-      '' : ( 
-        m = await safeSend(bot, chatId, text, options),
-        state.setState(chatId, 'questionsMsgId', m.message_id)
-      )
-      
+      // Пытаемся редактировать старое сообщение
+const edited = await safeEdit(bot, chatId, chatState.questionsMsgId, text, { reply_markup });
+  
+      if (!edited) {
+        // Если редактирование не удалось — отправляем новое
+        sentMessage = await safeSend(bot, chatId, text, { reply_markup });
+  
+        // Сохраняем ID нового service message
+        state.setState(chatId, "questionsMsgId", sentMessage.message_id);
+      }
 
       // Очистка служебных сообщений
       if (deleteOld) await clearServiceMessages(bot, chatId);

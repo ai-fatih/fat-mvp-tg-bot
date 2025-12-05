@@ -57,62 +57,46 @@ export const headers = {
 /**
  * ФОРМАТИРОВАНИЕ ДАТ
  */
-export function formatDate(date = new Date()) {
-    return date.toLocaleString("ru-RU", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    });
-}
 
+export function formatDate(dateISO) {
+    try {
+    const d = new Date(dateISO);
+    return d.toLocaleString("ru-RU", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+    });
+    } catch (e) {
+    return dateISO;
+    }
+    }
 
 /**
  * ПРЕДСТАВЛЕНИЕ ВОПРОСОВ
  */
-export function buildQuestionsList(questions = []) {
-    let out =
-        `${headers.questions()} (${questions.length} из 20)` +
-        fmt.nl(2);
+export function buildQuestionsList(questions) {
+  return questions
+    .map((q, i) => {
+      const created = telegram.formatDate(q.createdAt);
 
-    for (const q of questions) {
-        out += `${fmt.italic(`${q.id}. ${fmt.esc(q.question)}`)}\n`;
-        if (q.answer) {
-            out += `Ответ: ${fmt.esc(q.answer)}\n`;
-        }
-        out += fmt.nl();
-    }
+      const status = q.ready
+        ? 'Готов'
+        : q.answer
+          ? 'Отвечен'
+          : 'В обработке';
 
-    return out + fmt.nl() + headers.waiting();
+      return `
+<b>${i + 1}. Вопрос:</b> ${q.question}
+
+💬 <b>Ответ:</b> ${q.answer || '—'}
+🔄 <b>Статус:</b> ${status}
+📎 <b>Файлов:</b> ${q.files?.length || 0}
+🕒 <b>Создан:</b> ${created}
+      `.trim();
+    })
+    .join('\n\n');
 }
-
-
-/**
- * ТИПОВЫЕ ШАБЛОНЫ
- */
-export function buildWelcomeMessage() {
-    return (
-        `${headers.welcome()}\n` +
-        `Напишите ваш вопрос, я добавлю его в список.\n`
-    );
-}
-
-export function buildAddedQuestion(text) {
-    return `${headers.success("Добавлено")}\n${fmt.italic(fmt.esc(text))}`;
-}
-
-export function buildDeletedMessage(id) {
-    return `${headers.warning("Вопрос удалён")}\nID: ${fmt.bold(id)}`;
-}
-
-export function buildErrorMessage(err) {
-    return (
-        `${headers.error("Произошла ошибка")}\n` +
-        fmt.mono(fmt.esc(err?.message || err || "Неизвестная ошибка"))
-    );
-}
-
  
 
 /**
@@ -125,9 +109,5 @@ export default {
     formatDate,
     
     // основные шаблоны
-    buildQuestionsList,
-    buildWelcomeMessage,
-    buildAddedQuestion,
-    buildDeletedMessage,
-    buildErrorMessage,
+    buildQuestionsList
 };
