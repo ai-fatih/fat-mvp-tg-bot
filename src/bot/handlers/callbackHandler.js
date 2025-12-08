@@ -7,6 +7,9 @@ async function callbackHandler(bot, msg) {
 
     const chatState = state.getState(chatId);
 
+    // Обязательное подтверждение нажатия
+    bot.answerCallbackQuery(msg.id).catch(() => {});
+
     try {
         // ============================================================
         // 1) Подтверждение вопроса
@@ -33,7 +36,7 @@ async function callbackHandler(bot, msg) {
                     answer: null,                        // ответ менеджера
                     files: [],                            // прикреплённые файлы
                     edited: false,                        // редактировался ли вопрос
-                    status: 'не отправлен на обработку',                          // статус готовности ответа
+                    status: 'Вопрос не отправлен на обработку',                          // статус готовности ответа
                     high_priority: false,                  // для будущего
                     createdAt: new Date().toISOString()   // дата/время создания
                 };
@@ -53,28 +56,48 @@ async function callbackHandler(bot, msg) {
             }
         }
 
-        // ============================================================
-        // 2) Отмена вопроса
-        // ============================================================
         if (data === 'cancel_question') {
-            // Сохраняем служебный ID
+
+            // Сохраняем ID текущего нажатого callback-сообщения
             chatState.serviceMsgId.push(msg.message.message_id);
             state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId);
-
-            // Чистим временное поле
+        
+            const oldText = chatState.tempQuestion;
             state.setState(chatId, 'tempQuestion', null);
-
-            // Очищаем чат
+        
+            // Удаляем все предыдущие служебные сообщения
             await telegram.clearServiceMessages(bot, chatId);
+        
+            // Отправляем пользователю его текст как черновик
+            if (oldText) {
+        
+                const draftMsg = await bot.sendMessage(
+                    chatId,
+                    `✏️ Вы отменили вопрос.\nМожете отредактировать и отправить заново:\n\n${oldText}`,
+                    { reply_markup: { force_reply: true } }
+                );
+        
+                // Сохраняем как служебное, чтобы потом удалить
+                chatState.serviceMsgId.push(draftMsg.message_id);
+                state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId);
+            }
+        }
+        
+        // 1) Отправить менеджеру
+        if (data === '🚀_отправить_менеджеру') {
+            return await handleSendToManager(bot, chatId);
         }
 
-        // ============================================================
-        // 🔧 Место для будущих callback-команд
-        // ============================================================
-        // if (data === 'edit_question') { ... }
-        // if (data === 'delete_question') { ... }
-        // if (data === 'send_question') { ... }
- 
+        // 2) Обновить список вопросов
+        if (data === '🔄_обновить') {
+            return await chatService.updateQuestionsList(bot, chatId);
+        }
+
+        // 3) Очистить список вопросов
+        if (data === '🧹_очистить') {
+            chatService.clearQuestions(chatId);
+            return await chatService.updateQuestionsList(bot, chatId);
+        }
     } catch (err) {
         console.error("[CALLBACK] Общая ошибка:", err);
     }

@@ -74,6 +74,13 @@ export function formatDate(dateISO) {
 /**
  * ПРЕДСТАВЛЕНИЕ ВОПРОСОВ
  */
+const numberEmojis = [
+  "1️⃣","2️⃣","3️⃣","4️⃣","5️⃣",
+  "6️⃣","7️⃣","8️⃣","9️⃣","🔟",
+  "1️⃣1️⃣","1️⃣2️⃣","1️⃣3️⃣","1️⃣4️⃣","1️⃣5️⃣",
+  "1️⃣6️⃣","1️⃣7️⃣","1️⃣8️⃣","1️⃣9️⃣","2️⃣0️⃣"
+];
+
 export function buildQuestionsList(questions) {
   if (!questions.length) return "Список пуст.";
 
@@ -81,25 +88,28 @@ export function buildQuestionsList(questions) {
     .map((q, idx) => {
       const status = q.status ?? "—";
       const answer = q.answer ?? "—";
+
       const shortQuestion =
-      q.question.length > 60
-        ? q.question.slice(0, 60) + '...'
-        : q.question;
+        q.question.length > 60
+          ? q.question.slice(0, 60) + "..."
+          : q.question;
+
+      const num = numberEmojis[idx] ?? `${idx + 1}.`;
 
       return (
-        `<b>${idx + 1}. Вопрос: ${shortQuestion}\n` +
-        `    Ответ: ${answer}</b>\n` +
-        `    Статус: ${status}\n` +
-        `    Файлов: ${q.files?.length || 0}\n` +
-        `    Создан: ${formatDate(q.createdAt)}`
+        `<b>${num} Вопрос:</b> ${shortQuestion}\n` +
+        `       <b>Ответ:</b> ${answer}\n` +
+        `<i>       ${status}\n` +
+        `       Создан ${formatDate(q.createdAt)}</i>`
       );
     })
     .join("\n\n");
 }
 
+
  
 
-/**
+/** 
  * Общий экспорт
  */
 export default {
