@@ -33,7 +33,7 @@ async function callbackHandler(bot, msg) {
                     answer: null,                        // ответ менеджера
                     files: [],                            // прикреплённые файлы
                     edited: false,                        // редактировался ли вопрос
-                    ready: false,                          // статус готовности ответа
+                    status: 'не отправлен на обработку',                          // статус готовности ответа
                     high_priority: false,                  // для будущего
                     createdAt: new Date().toISOString()   // дата/время создания
                 };

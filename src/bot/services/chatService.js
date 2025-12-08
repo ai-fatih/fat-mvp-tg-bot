@@ -61,27 +61,23 @@ export class ChatService {
  
     const status = determineStatus(chatState);
     const { text, reply_markup } = buildServiceMessage(status, chatState.questions);
-  
-    let sentMessage;
-  
+    const sendOptions = { parse_mode: 'HTML', reply_markup };
+     
     try {
-      // Пытаемся редактировать старое сообщение
-const edited = await safeEdit(bot, chatId, chatState.questionsMsgId, text, { reply_markup });
-  
+      const edited = await safeEdit(bot, chatId, chatState.questionsMsgId, text, sendOptions);
       if (!edited) {
-        // Если редактирование не удалось — отправляем новое
-        sentMessage = await safeSend(bot, chatId, text, { reply_markup });
-  
-        // Сохраняем ID нового service message
-        state.setState(chatId, "questionsMsgId", sentMessage.message_id);
+        const sentMessage = await safeSend(bot, chatId, text, sendOptions);
+        if (sentMessage && sentMessage.message_id) {
+          state.setState(chatId, 'questionsMsgId', sentMessage.message_id);
+        }
       }
-
       // Очистка служебных сообщений
       if (deleteOld) await clearServiceMessages(bot, chatId);
-
     } catch (err) {
-      console.error(`[ChatService] Ошибка обновления списка вопросов:`, err);
+      console.error('updateQuestionsList error', err);
     }
+       
+ 
   }
 }
 

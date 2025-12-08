@@ -39,7 +39,6 @@ export const list = {
         items.map(i => `☑️ ${fmt.esc(i)}`).join("\n"),
 };
 
-
 /**
  * ЗАГОЛОВКИ / БЛОКИ / СТАТУСЫ
  */
@@ -76,27 +75,28 @@ export function formatDate(dateISO) {
  * ПРЕДСТАВЛЕНИЕ ВОПРОСОВ
  */
 export function buildQuestionsList(questions) {
+  if (!questions.length) return "Список пуст.";
+
   return questions
-    .map((q, i) => {
-      const created = telegram.formatDate(q.createdAt);
+    .map((q, idx) => {
+      const status = q.status ?? "—";
+      const answer = q.answer ?? "—";
+      const shortQuestion =
+      q.question.length > 60
+        ? q.question.slice(0, 60) + '...'
+        : q.question;
 
-      const status = q.ready
-        ? 'Готов'
-        : q.answer
-          ? 'Отвечен'
-          : 'В обработке';
-
-      return `
-<b>${i + 1}. Вопрос:</b> ${q.question}
-
-💬 <b>Ответ:</b> ${q.answer || '—'}
-🔄 <b>Статус:</b> ${status}
-📎 <b>Файлов:</b> ${q.files?.length || 0}
-🕒 <b>Создан:</b> ${created}
-      `.trim();
+      return (
+        `<b>${idx + 1}. Вопрос: ${shortQuestion}\n` +
+        `    Ответ: ${answer}</b>\n` +
+        `    Статус: ${status}\n` +
+        `    Файлов: ${q.files?.length || 0}\n` +
+        `    Создан: ${formatDate(q.createdAt)}`
+      );
     })
-    .join('\n\n');
+    .join("\n\n");
 }
+
  
 
 /**
