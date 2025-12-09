@@ -9,14 +9,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const templatesPath = path.resolve(__dirname, './serviceMessage.json');
 const templates = JSON.parse(fs.readFileSync(templatesPath, 'utf8'));
-
-/**
- * buildServiceMessage(status, questions, state)
- * Возвращает { text, reply_markup }
- */
+ 
 export function buildServiceMessage(status, questions = []) {
   const tpl = templates[status];
-  if (!tpl) return { text: "Ошибка: неизвестный статус", reply_markup: null };
+  if (!tpl) return { text: "Ошибка: неизвестная команда", reply_markup: null };
 
   const questionsList = telegram.buildQuestionsList(questions);
 

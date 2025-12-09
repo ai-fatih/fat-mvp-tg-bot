@@ -19,15 +19,9 @@ async function callbackHandler(bot, msg) {
                 if (!chatState.tempQuestion) {
                     throw new Error('Временный вопрос отсутствует');
                 }
-
                 // Сохраняем служебное сообщение
                 chatState.serviceMsgId.push(msg.message.message_id);
                 state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId);
-
-                // --- Ограничение по количеству ---
-                if (chatState.questions.length >= 20) {
-                    throw new Error('Превышено максимальное количество вопросов (20)');
-                }
 
                 // --- Формируем модель вопроса ---
                 const newQuestion = {
@@ -36,21 +30,21 @@ async function callbackHandler(bot, msg) {
                     answer: null,                        // ответ менеджера
                     files: [],                            // прикреплённые файлы
                     edited: false,                        // редактировался ли вопрос
-                    status: 'Черновик (отправьте в работу)',                          // статус готовности ответа
+                    status: 'черновик (отправьте в работу)',                          // статус готовности ответа
                     high_priority: false,                  // для будущего
                     createdAt: new Date().toISOString()   // дата/время создания
                 };
   
-
-                // --- Сохраняем сохранённый вопрос ---
-                chatState.questions.push(newQuestion);
-                state.setState(chatId, 'questions', chatState.questions);
-
-                // --- Очищаем временное поле ---
-                state.setState(chatId, 'tempQuestion', null);
-                state.setState(chatId, 'status', 'COLLECTING');
-
-                // --- Перерисовываем список вопросов ---
+                if (chatState.questions.length >= 2) {
+                    state.updateChatStatus(chatId, 'LIMIT_REACHED')
+                } else {
+                    // --- Сохраняем вопрос ---
+                    chatState.questions.push(newQuestion);
+                    state.setState(chatId, 'questions', chatState.questions);
+                    state.updateChatStatus(chatId, 'COLLECTING');
+                }
+                
+                state.setState(chatId, 'tempQuestion', null)
                 await chatService.updateQuestionsList(bot, chatId);
             } catch (err) {
                 console.error("[CONFIRM] Ошибка:", err);
@@ -102,7 +96,7 @@ async function callbackHandler(bot, msg) {
 
         // Сохраняем в state только одно поле
         state.setState(chatId, 'questions', updated);
-        state.setState(chatId, 'status', 'SENT_TO_MANAGER');
+        state.updateChatStatus(chatId, 'SENT_TO_MANAGER');
 
         // Временно просто логируем
         console.log('Вопросы отправлены менеджеру →', updated);

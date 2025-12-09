@@ -1,24 +1,13 @@
-import { chatState } from './chatState.js';
+import { chatState, determineStatus } from './index.js';
+import * as sm from './stateMachine.js';
 import { logger } from '../helpers/logger.js';
 
-/**
- * Получить состояние чата.
- */
 export function getState(chatId) {
   return chatState.get(chatId);
 }
-
-/**
- * Установить поле в состоянии.
- */
 export function setState(chatId, key, value) {
   chatState.set(chatId, key, value);
 }
-
-/**
- * Добавить ID сервисного сообщения.
- * Используем новый массив: state.serviceMsgId []
- */
 export function addServiceMessage(chatId, messageId) {
   const state = getState(chatId);
 
@@ -34,18 +23,10 @@ export function addServiceMessage(chatId, messageId) {
     );
   }
 }
-
-/**
- * Список активных сервисных сообщений.
- */
 export function getServiceMessages(chatId) {
   const state = getState(chatId);
   return Array.isArray(state.serviceMsgId) ? state.serviceMsgId : [];
 }
-
-/**
- * Удалить конкретное сервисное сообщение.
- */
 export function removeServiceMessage(chatId, messageId) {
   const state = getState(chatId);
 
@@ -57,11 +38,6 @@ export function removeServiceMessage(chatId, messageId) {
     `[STATE] serviceMsgId - ${messageId} (chatId=${chatId})`
   );
 }
-
-/**
- * Архивировать текущие serviceMsgId
- * (используем в UI-потоке при обновлении экрана).
- */
 export function archiveServiceMessages(chatId) {
   const state = getState(chatId);
 
@@ -77,10 +53,6 @@ export function archiveServiceMessages(chatId) {
   // очищаем активные
   state.serviceMsgId = [];
 }
-
-/**
- * Добавить вопрос в массив.
- */
 export function addQuestion(chatId, question) {
   const state = getState(chatId);
   state.questions.push(question);
@@ -89,10 +61,6 @@ export function addQuestion(chatId, question) {
     `[STATE] Добавлен вопрос "${question.text}" (chatId=${chatId})`
   );
 }
-
-/**
- * Удалить вопрос по ID.
- */
 export function removeQuestion(chatId, questionId) {
   const state = getState(chatId);
 
@@ -102,35 +70,36 @@ export function removeQuestion(chatId, questionId) {
     `[STATE] Вопрос #${questionId} удалён (chatId=${chatId})`
   );
 }
-
-/**
- * Полная очистка state чата.
- * Используется при RESET.
- */
 export function clearChatState(chatId) {
   chatState.reset(chatId);
 
   logger.debug(`[STATE] Reset состояния (chatId=${chatId})`);
 }
-
-
 // Сохранить message_id постоянного сообщения со списком (questions)
 export function setQuestionsMessageId(chatId, messageId) {
     const state = getState(chatId);
     state.questionsMsgId = messageId;
     logger.debug(`[STATE] questionsMsgId = ${messageId} (chatId=${chatId})`);
   }
-  
-  // Получить message_id постоянного сообщения
-  export function getQuestionsMessageId(chatId) {
+export function getQuestionsMessageId(chatId) {
     const state = getState(chatId);
     return state.questionsMsgId || null;
   }
-  
-  // Удалить ссылку на постоянное сообщение (не удаляет само сообщение в Telegram)
-  export function clearQuestionsMessageId(chatId) {
+export function clearQuestionsMessageId(chatId) {
     const state = getState(chatId);
     state.questionsMsgId = null;
     logger.debug(`[STATE] questionsMsgId cleared (chatId=${chatId})`);
   }
-  
+// обработка статусов
+  export function getChatStatus(chatId) {
+    const s = getState(chatId) || {};
+    return determineStatus(s);
+  }
+  export function updateChatStatus(chatId, status) {
+    try {
+      return sm.setChatStatus(chatId, status);
+    } catch (e) {
+      console.error('[stateHelpers] updateChatStatus', e);
+      return null;
+    }
+  }

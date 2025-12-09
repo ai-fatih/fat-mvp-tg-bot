@@ -1,6 +1,5 @@
 // chatService.js
-import { state, telegram, helpers } from '../../utils/index.js';
-import { determineStatus } from './message/determineStatus.js';
+import { state, telegram, helpers } from '../../utils/index.js'; 
 import { buildServiceMessage } from './message/buildServiceMessage.js';
 
 const { safeSend, safeEdit, clearServiceMessages, fmt, headers } = telegram;
@@ -58,21 +57,45 @@ export class ChatService {
    */
   async updateQuestionsList(bot, chatId, options = {}, deleteOld = true) {
     const chatState = state.getState(chatId); 
- 
-    const status = determineStatus(chatState);
+    const status = state.getChatStatus(chatId);  
+    console.log('глобальный статус:', status)
+
     const { text, reply_markup } = buildServiceMessage(status, chatState.questions);
     const sendOptions = { parse_mode: 'HTML', reply_markup };
      
     try {
-      const edited = await safeEdit(bot, chatId, chatState.questionsMsgId, text, sendOptions);
-      if (!edited) {
-        const sentMessage = await safeSend(bot, chatId, text, sendOptions);
-        if (sentMessage && sentMessage.message_id) {
-          state.setState(chatId, 'questionsMsgId', sentMessage.message_id);
+      let questionsMsgId = chatState.questionsMsgId;
+  // Очистка служебных сообщений
+    if (deleteOld) await clearServiceMessages(bot, chatId);
+
+    if (questionsMsgId) {
+        const edited = await safeEdit(bot, chatId, questionsMsgId, text, sendOptions);
+
+        if (edited === 'NOT_MODIFIED') {
+            // ничего не делаем
+            return;
         }
-      }
-      // Очистка служебных сообщений
-      if (deleteOld) await clearServiceMessages(bot, chatId);
+
+        if (edited === false) {
+            // сообщение не найдено — нужно отправить новое
+            const sent = await safeSend(bot, chatId, text, sendOptions);
+            if (sent?.message_id) {
+                state.setState(chatId, 'questionsMsgId', sent.message_id);
+            }
+            return;
+        }
+
+        // если edited === true → всё успешно → выходим
+        return;
+    }
+
+    // если вопросов ещё не было или id утерян
+    const sent = await safeSend(bot, chatId, text, sendOptions);
+      if (sent?.message_id) {
+        state.setState(chatId, 'questionsMsgId', sent.message_id);
+    }
+
+       
     } catch (err) {
       console.error('updateQuestionsList error', err);
     }

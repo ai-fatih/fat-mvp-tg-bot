@@ -35,7 +35,6 @@ export async function messageHandler(bot, msg) {
         // Сохраняем контекст   
         chatState.serviceMsgId.push(userMsgId);
         state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId);
-        state.setState(chatId, 'chatId', chatId);
         state.setState(chatId, 'lastUserMessageId', userMsgId);
         state.setState(chatId, 'tempQuestion', text);
 

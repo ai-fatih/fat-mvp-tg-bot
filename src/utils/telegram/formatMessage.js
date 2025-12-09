@@ -99,7 +99,7 @@ export function buildQuestionsList(questions) {
       return (
         `<b>${num} Вопрос:</b> ${shortQuestion}\n` +
         `       <b>Ответ:</b> ${answer}\n` +
-        `<i>       ${status}\n` +
+        `<i>       Статус ${status}\n` +
         `       Создан ${formatDate(q.createdAt)}</i>`
       );
     })

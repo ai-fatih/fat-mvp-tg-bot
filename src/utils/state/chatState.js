@@ -136,7 +136,7 @@ getQuestionsMsgId(chatId) {
 
       lastUserMessageId: null,
       tempQuestion: null,
-      status: null,           // ENUM: WELCOME | FIRST | ACTIVE | LIMIT | SENT | CLEARED | RESUMED
+      status: 'EMPTY',           // ENUM: WELCOME | FIRST | ACTIVE | LIMIT | SENT | CLEARED | RESUMED
       updatedAt: Date.now()
     };
   }
