@@ -1,49 +1,46 @@
 /**
- * Определяет текущий статус сервисного сообщения
+ * Определяет итоговый статус сервиса.
+ * Если глобальный статус (s.status) установлен — возвращает его.
+ * Если нет — вычисляет статус автоматически.
+ *
  * @param {object} s - состояние чата
- * @returns {string} статус (EMPTY, COLLECTING, AWAITING_MANAGER, COMPLETE, LIMIT_REACHED, ERROR, BLOCKED_USER, NEW_FEATURE_ALERT)
+ * @returns {string} статус
  */
 export function determineStatus(s) {
   const questions = s.questions || [];
 
-  // 0. Нет вопросов
+  // ============================================================
+  // 0. Если глобальный статус явно установлен → он приоритетный
+  // ============================================================
+  if (s.status) {
+    return s.status;
+  }
+
+  // ============================================================
+  // Автоматическое вычисление статуса (fallback)
+  // ============================================================
+
+  // 1. Нет вопросов
   if (questions.length === 0) {
     return 'EMPTY';
   }
 
-  // 1. Пользователь заблокирован
-  if (s.blocked) {
-    return 'BLOCKED_USER';
-  }
-
-  // 2. Ошибка добавления вопроса
+  // 3. Ошибка добавления вопроса
   if (s.errorAddingQuestion) {
     return 'ERROR';
   }
 
-  // 3. Достигнут лимит вопросов
+  // 4. Лимит вопросов
   if (questions.length >= 20) {
     return 'LIMIT_REACHED';
   }
 
-  // 4. Только что получен новый вопрос — менеджер не ответил
-  if (s.lastUserQuestion && !s.lastUserQuestion.ready) {
-    return 'AWAITING_MANAGER';
-  }
-
-  const allAnswered = questions.every(q => q.ready);
-  const hasUnanswered = questions.some(q => !q.ready);
-
-  // 5. Все вопросы обработаны
+  // 5. Проверка готовности всех вопросов
+  const allAnswered = questions.every(q => q.status === 'готово');
   if (allAnswered) {
     return 'COMPLETE';
   }
 
-  // 6. Имеются вопросы без ответа — идёт сбор/обработка
-  if (hasUnanswered) {
-    return 'COLLECTING';
-  }
-
-  // fallback на случай неизвестных ситуаций
+  // 6. Иначе продолжаем сбор вопросов
   return 'COLLECTING';
 }

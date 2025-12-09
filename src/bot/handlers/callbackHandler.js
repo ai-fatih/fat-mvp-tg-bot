@@ -36,7 +36,7 @@ async function callbackHandler(bot, msg) {
                     answer: null,                        // ответ менеджера
                     files: [],                            // прикреплённые файлы
                     edited: false,                        // редактировался ли вопрос
-                    status: 'Вопрос не отправлен на обработку',                          // статус готовности ответа
+                    status: 'Черновик (отправьте в работу)',                          // статус готовности ответа
                     high_priority: false,                  // для будущего
                     createdAt: new Date().toISOString()   // дата/время создания
                 };
@@ -48,6 +48,7 @@ async function callbackHandler(bot, msg) {
 
                 // --- Очищаем временное поле ---
                 state.setState(chatId, 'tempQuestion', null);
+                state.setState(chatId, 'status', 'COLLECTING');
 
                 // --- Перерисовываем список вопросов ---
                 await chatService.updateQuestionsList(bot, chatId);
@@ -83,20 +84,45 @@ async function callbackHandler(bot, msg) {
             }
         }
         
-        // 1) Отправить менеджеру
-        if (data === '🚀_отправить_менеджеру') {
-            return await handleSendToManager(bot, chatId);
+        // ============================================================
+    // 3) 🚀 Отправить менеджеру
+    // ============================================================
+    if (data === '🚀_отправить_в_работу') {
+     try {
+        // Нет вопросов — нет смысла отправлять
+        if (!chatState.questions?.length) {
+            return console.log("Список вопросов пуст → отправлять нечего");
         }
+
+        // Обновляем статусы
+        const updated = chatState.questions.map(q => ({
+            ...q,
+            status: 'в работе',    // статус после отправки 
+        }));
+
+        // Сохраняем в state только одно поле
+        state.setState(chatId, 'questions', updated);
+        state.setState(chatId, 'status', 'SENT_TO_MANAGER');
+
+        // Временно просто логируем
+        console.log('Вопросы отправлены менеджеру →', updated);
+
+        // Фронт пока не перерисовываем — MVP
+        return;
+    } catch (err) {
+        console.error("[SEND_TO_MANAGER] Ошибка:", err);
+    }
+}
+
 
         // 2) Обновить список вопросов
         if (data === '🔄_обновить') {
-            return await chatService.updateQuestionsList(bot, chatId);
+            return console.log('🔄_обновить')
         }
 
         // 3) Очистить список вопросов
         if (data === '🧹_очистить') {
-            chatService.clearQuestions(chatId);
-            return await chatService.updateQuestionsList(bot, chatId);
+            return console.log('🧹_очистить')
         }
     } catch (err) {
         console.error("[CALLBACK] Общая ошибка:", err);

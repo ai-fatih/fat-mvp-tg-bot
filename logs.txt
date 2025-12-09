@@ -74,3 +74,10 @@
 [WARN] 2025-12-08T22:30:53.912Z [EDIT] Не удалось изменить сообщение null в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
 [WARN] 2025-12-08T22:31:26.360Z [EDIT] Не удалось изменить сообщение null в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
 [WARN] 2025-12-08T22:31:29.890Z [EDIT] Не удалось изменить сообщение null в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
+[WARN] 2025-12-09T09:18:43.216Z [EDIT] Не удалось изменить сообщение 1422 в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
+[WARN] 2025-12-09T09:26:33.992Z [EDIT] Не удалось изменить сообщение 1428 в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
+[WARN] 2025-12-09T09:30:54.463Z [EDIT] Не удалось изменить сообщение null в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
+[WARN] 2025-12-09T09:33:37.077Z [EDIT] Не удалось изменить сообщение null в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
+[WARN] 2025-12-09T09:35:11.042Z [EDIT] Не удалось изменить сообщение null в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
+[WARN] 2025-12-09T09:37:19.017Z [EDIT] Не удалось изменить сообщение null в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
+[WARN] 2025-12-09T09:48:56.751Z [EDIT] Не удалось изменить сообщение null в chatId=459797765: ETELEGRAM: 400 Bad Request: message to edit not found
