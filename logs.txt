@@ -155,3 +155,74 @@
 [INFO] 2025-12-14T10:31:23.711Z [QUESTION] added (chatId=459797765, id=1765708283711)
 [WARN] 2025-12-14T10:31:23.793Z [CHAT] main UI message lost → recreating [object Object]
 [INFO] 2025-12-14T10:31:23.891Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-14T20:14:28.173Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T20:14:28.234Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T20:14:42.872Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T20:14:42.873Z [QUESTION] added (chatId=459797765, id=1765743282873)
+[INFO] 2025-12-14T20:15:06.443Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T20:15:06.444Z [QUESTION] added (chatId=459797765, id=1765743306444)
+[WARN] 2025-12-14T20:15:06.514Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T20:15:06.549Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T20:16:06.426Z [CALLBACK] cancel_question [object Object]
+[INFO] 2025-12-14T20:16:06.427Z [QUESTION] tempQuestion cancelled (chatId=459797765)
+[INFO] 2025-12-14T20:16:28.906Z [CALLBACK] cancel_question [object Object]
+[INFO] 2025-12-14T20:16:28.907Z [QUESTION] tempQuestion cancelled (chatId=459797765)
+[INFO] 2025-12-14T20:16:33.661Z [CALLBACK] send_questions [object Object]
+[INFO] 2025-12-14T20:16:33.664Z [QUESTION] statuses updated → в работе (chatId=459797765)
+[INFO] 2025-12-14T20:16:33.716Z [CALLBACK] questions sent to work [object Object]
+[WARN] 2025-12-14T20:16:50.907Z [CALLBACK] clear_questions [object Object]
+[INFO] 2025-12-14T20:17:18.606Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T20:17:18.606Z [QUESTION] added (chatId=459797765, id=1765743438606)
+[WARN] 2025-12-14T20:34:39.912Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T20:34:39.950Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-14T20:41:19.957Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T20:41:19.998Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T20:41:32.495Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T20:41:32.501Z [QUESTION] added (chatId=459797765, id=1765744892499)
+[INFO] 2025-12-14T20:41:48.996Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T20:41:48.997Z [QUESTION] added (chatId=459797765, id=1765744908997)
+[WARN] 2025-12-14T20:42:39.650Z [CALLBACK] clear_questions [object Object]
+[WARN] 2025-12-14T20:52:06.954Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T20:52:07.002Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T20:52:38.914Z [CALLBACK] cancel_question [object Object]
+[INFO] 2025-12-14T20:52:38.914Z [QUESTION] tempQuestion cancelled (chatId=459797765)
+[INFO] 2025-12-14T20:52:51.672Z [CALLBACK] cancel_question [object Object]
+[INFO] 2025-12-14T20:52:51.672Z [QUESTION] tempQuestion cancelled (chatId=459797765)
+[INFO] 2025-12-14T20:53:14.687Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T20:53:14.688Z [QUESTION] added (chatId=459797765, id=1765745594687)
+[INFO] 2025-12-14T20:53:43.419Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T20:53:43.420Z [QUESTION] added (chatId=459797765, id=1765745623420)
+[INFO] 2025-12-14T20:54:06.274Z [CALLBACK] send_questions [object Object]
+[INFO] 2025-12-14T20:54:06.275Z [QUESTION] statuses updated → в работе (chatId=459797765)
+[INFO] 2025-12-14T20:54:06.374Z [CALLBACK] questions sent to work [object Object]
+[WARN] 2025-12-14T20:54:30.187Z [CALLBACK] clear_questions [object Object]
+[WARN] 2025-12-14T21:04:12.149Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T21:04:12.194Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T21:04:30.744Z [CALLBACK] cancel_question [object Object]
+[INFO] 2025-12-14T21:04:30.745Z [QUESTION] tempQuestion cancelled (chatId=459797765)
+[INFO] 2025-12-14T21:04:44.517Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T21:04:44.520Z [QUESTION] added (chatId=459797765, id=1765746284517)
+[WARN] 2025-12-14T21:04:44.608Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T21:04:44.652Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T21:05:16.419Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T21:05:16.420Z [QUESTION] added (chatId=459797765, id=1765746316420)
+[INFO] 2025-12-14T21:05:22.705Z [CALLBACK] send_questions [object Object]
+[INFO] 2025-12-14T21:05:22.710Z [QUESTION] statuses updated → в работе (chatId=459797765)
+[INFO] 2025-12-14T21:05:22.761Z [CALLBACK] questions sent to work [object Object]
+[WARN] 2025-12-14T21:05:27.442Z [CALLBACK] clear_questions [object Object]
+[INFO] 2025-12-14T21:06:11.682Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T21:06:11.683Z [QUESTION] added (chatId=459797765, id=1765746371683)
+[INFO] 2025-12-14T21:07:19.012Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T21:07:19.012Z [QUESTION] added (chatId=459797765, id=1765746439012)
+[WARN] 2025-12-14T21:07:37.553Z [CALLBACK] clear_questions [object Object]
+[INFO] 2025-12-14T21:21:24.227Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T21:21:24.227Z [QUESTION] added (chatId=459797765, id=1765747284227)
+[INFO] 2025-12-14T21:23:54.085Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T21:23:54.090Z [QUESTION] added (chatId=459797765, id=1765747434090)
+[WARN] 2025-12-14T21:23:54.222Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T21:23:54.323Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T21:25:07.188Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-14T21:25:07.189Z [QUESTION] added (chatId=459797765, id=1765747507189)
+[INFO] 2025-12-14T21:25:19.764Z [CALLBACK] send_questions [object Object]
+[INFO] 2025-12-14T21:25:19.769Z [QUESTION] statuses updated → в работе (chatId=459797765)
+[INFO] 2025-12-14T21:25:19.828Z [CALLBACK] questions sent to work [object Object]

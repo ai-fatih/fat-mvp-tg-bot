@@ -13,29 +13,36 @@ export const keyboards = {
         ]
     }),
 };
-
-export function buildInlineKeyboard(btns) {
-    if (!btns || !btns.length) return null;
-    
+ 
+  export function buildInlineKeyboard(btns) {
+    if (!Array.isArray(btns) || !btns.length) return null;
+  
     const keyboard = btns.map(row => {
-    // Если строка → превращаем в один массив
-    if (typeof row === "string") {
-    return [{
-    text: row,
-    callback_data: row.replace(/\s+/g, '_').toLowerCase()
-    }];
-    }
-    
-    // Если массив → это строка с несколькими кнопками
-    if (Array.isArray(row)) {
-    return row.map(text => ({
-    text,
-    callback_data: text.replace(/\s+/g, '_').toLowerCase()
-    }));
-    }
-    
-    return [];
+      const buttons = Array.isArray(row) ? row : [row];
+  
+      return buttons.map(btn => {
+        // 🔹 Новый формат
+        if (typeof btn === 'object') {
+          return {
+            text: btn.text,
+            callback_data: btn.action,
+          };
+        }
+  
+        // 🔸 Legacy-режим (временно)
+        if (typeof btn === 'string') {
+          return {
+            text: btn,
+            callback_data: btn
+              .replace(/[^\w\s]/g, '')
+              .replace(/\s+/g, '_')
+              .toLowerCase(),
+          };
+        }
+  
+        return null;
+      }).filter(Boolean);
     });
-    
+  
     return { inline_keyboard: keyboard };
-  } 
+  }

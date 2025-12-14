@@ -83,7 +83,7 @@ const numberEmojis = [
 
 export function buildQuestionsList(questions) {
   if (!questions.length) return "Список пуст.";
-
+  console.log('Вопросы перед билдом', questions)
   return questions
     .map((q, idx) => {
       const status = q.status ?? "—";
