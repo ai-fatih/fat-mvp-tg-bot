@@ -7,7 +7,7 @@ import { telegram } from '../../../utils/index.js';
 // __dirname support
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const templatesPath = path.resolve(__dirname, './serviceMessage.json');
+const templatesPath = path.resolve(__dirname, './templates.json');
 const templates = JSON.parse(fs.readFileSync(templatesPath, 'utf8'));
  
 export function buildServiceMessage(status, questions = []) {

@@ -102,3 +102,56 @@
 [WARN] 2025-12-09T14:16:08.164Z [EDIT] Не удалось изменить сообщение 1518 в chatId=459797765: ETELEGRAM: 400 Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
 [WARN] 2025-12-09T14:17:34.209Z [EDIT] Не удалось изменить сообщение 1522 в chatId=459797765: ETELEGRAM: 400 Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
 [WARN] 2025-12-09T14:19:11.564Z [EDIT] Не удалось изменить сообщение 1526 в chatId=459797765: ETELEGRAM: 400 Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+[INFO] 2025-12-14T09:15:00.312Z [CHAT] no questionsMsgId → sending new message [object Object]
+[INFO] 2025-12-14T09:15:00.349Z [CHAT] main UI created [object Object]
+[WARN] 2025-12-14T09:15:43.975Z [EDIT] Не удалось изменить сообщение 1575 в chatId=459797765: ETELEGRAM: 400 Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+[WARN] 2025-12-14T09:15:43.975Z [CHAT] questionsMsgId invalid → recreating UI [object Object]
+[INFO] 2025-12-14T09:15:44.023Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T09:22:04.804Z [CHAT] no questionsMsgId → sending new message [object Object]
+[INFO] 2025-12-14T09:22:04.848Z [CHAT] main UI created [object Object]
+[WARN] 2025-12-14T09:22:33.605Z [CHAT] questionsMsgId invalid → recreating UI [object Object]
+[INFO] 2025-12-14T09:22:33.668Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-14T09:22:53.175Z [CHAT] questionsMsgId invalid → recreating UI [object Object]
+[INFO] 2025-12-14T09:22:53.223Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:00:38.142Z [CHAT] no questionsMsgId → sending new message [object Object]
+[INFO] 2025-12-14T10:00:38.247Z [CHAT] main UI created [object Object]
+[WARN] 2025-12-14T10:00:54.360Z [CHAT] questionsMsgId invalid → recreating UI [object Object]
+[INFO] 2025-12-14T10:00:54.414Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-14T10:05:08.093Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:05:08.165Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-14T10:05:26.861Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:05:26.895Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:07:48.262Z [QUESTION] added (chatId=459797765, id=1765706868262)
+[WARN] 2025-12-14T10:07:48.263Z [SEND] попытка 1 для chatId=✔ Вопрос добавлен! не удалась: bot.sendMessage is not a function
+[WARN] 2025-12-14T10:07:48.764Z [SEND] попытка 2 для chatId=✔ Вопрос добавлен! не удалась: bot.sendMessage is not a function
+[WARN] 2025-12-14T10:07:49.265Z [SEND] попытка 3 для chatId=✔ Вопрос добавлен! не удалась: bot.sendMessage is not a function
+[ERROR] 2025-12-14T10:07:49.270Z [SEND] окончательная ошибка отправки сообщения chatId=✔ Вопрос добавлен!
+[INFO] 2025-12-14T10:13:18.451Z [QUESTION] added (chatId=459797765, id=1765707198451)
+[WARN] 2025-12-14T10:13:18.814Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:13:18.862Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:13:34.975Z [QUESTION] added (chatId=459797765, id=1765707214974)
+[WARN] 2025-12-14T10:14:08.418Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:14:08.488Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:14:26.217Z [QUESTION] added (chatId=459797765, id=1765707266217)
+[INFO] 2025-12-14T10:16:00.663Z [QUESTION] added (chatId=459797765, id=1765707360662)
+[WARN] 2025-12-14T10:16:00.834Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:16:00.889Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:16:42.595Z [QUESTION] added (chatId=459797765, id=1765707402594)
+[WARN] 2025-12-14T10:16:42.740Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:16:42.799Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-14T10:20:55.066Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:20:55.107Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:21:03.130Z [QUESTION] added (chatId=459797765, id=1765707663130)
+[WARN] 2025-12-14T10:21:41.259Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:21:41.307Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-14T10:22:01.930Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:22:01.981Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:22:21.221Z [QUESTION] added (chatId=459797765, id=1765707741220)
+[WARN] 2025-12-14T10:30:22.153Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:30:22.238Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:30:38.639Z [QUESTION] added (chatId=459797765, id=1765708238639)
+[WARN] 2025-12-14T10:31:07.214Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:31:07.252Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-14T10:31:23.711Z [QUESTION] added (chatId=459797765, id=1765708283711)
+[WARN] 2025-12-14T10:31:23.793Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-14T10:31:23.891Z [CHAT] main UI recreated [object Object]

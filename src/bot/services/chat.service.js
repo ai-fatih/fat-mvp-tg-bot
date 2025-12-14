@@ -1,9 +1,10 @@
 // chatService.js
 import { state, telegram, helpers } from '../../utils/index.js'; 
-import { buildServiceMessage } from './message/buildServiceMessage.js';
+import { buildServiceMessage } from './message/build.js'; 
+import { uiService } from './index.js';
 
-const { safeSend, safeEdit, clearServiceMessages, fmt, headers } = telegram;
-
+const { safeSend, safeEdit } = telegram;
+const { logger } = helpers
 
 /**
  * Сервис для работы с логикой чата:
@@ -57,50 +58,54 @@ export class ChatService {
    */
   async updateQuestionsList(bot, chatId, options = {}, deleteOld = true) {
     const chatState = state.getState(chatId); 
-    const status = state.getChatStatus(chatId);  
-    console.log('глобальный статус:', status)
-
+    const status = state.getChatStatus(chatId); 
     const { text, reply_markup } = buildServiceMessage(status, chatState.questions);
-    const sendOptions = { parse_mode: 'HTML', reply_markup };
-     
-    try {
-      let questionsMsgId = chatState.questionsMsgId;
-  // Очистка служебных сообщений
-    if (deleteOld) await clearServiceMessages(bot, chatId);
+    const sendOptions = { parse_mode: 'HTML', reply_markup }; 
+    let questionsMsgId = chatState.questionsMsgId;
+    if (deleteOld) {
+      await uiService.clearAll(bot, chatId);
+    }
+    
+    logger.debug('[CHAT] updateQuestionsList', {
+      chatId,
+      status,
+      questionsMsgId
+  }); 
+   
+    try { 
+      const edited = await safeEdit(bot, chatId, questionsMsgId, text, sendOptions);
 
-    if (questionsMsgId) {
-        const edited = await safeEdit(bot, chatId, questionsMsgId, text, sendOptions);
-
-        if (edited === 'NOT_MODIFIED') {
-            // ничего не делаем
-            return;
-        }
-
-        if (edited === false) {
-            // сообщение не найдено — нужно отправить новое
-            const sent = await safeSend(bot, chatId, text, sendOptions);
-            if (sent?.message_id) {
-                state.setState(chatId, 'questionsMsgId', sent.message_id);
-            }
-            return;
-        }
-
-        // если edited === true → всё успешно → выходим
+      // 1. Всё хорошо — сообщение живо
+      if (edited === true || edited === 'NOT_MODIFIED') {
+        logger.debug('[CHAT] UI exists and is актуален', { chatId });
         return;
-    }
-
-    // если вопросов ещё не было или id утерян
-    const sent = await safeSend(bot, chatId, text, sendOptions);
-      if (sent?.message_id) {
-        state.setState(chatId, 'questionsMsgId', sent.message_id);
-    }
-
+      }
+      
+      // 2. Сообщение реально потеряно
+      if (edited === 'NOT_FOUND') {
+        logger.warn('[CHAT] main UI message lost → recreating', {
+          chatId,
+          oldMessageId: questionsMsgId,
+        });
+      
+        state.setState(chatId, 'questionsMsgId', null);
+      
+        const sent = await safeSend(bot, chatId, text, sendOptions);
+      
+        if (sent?.message_id) {
+          state.setState(chatId, 'questionsMsgId', sent.message_id);
+      
+          logger.info('[CHAT] main UI recreated', {
+            chatId,
+            messageId: sent.message_id,
+          });
+        }
+      }
+      
        
     } catch (err) {
       console.error('updateQuestionsList error', err);
     }
-       
- 
   }
 }
 

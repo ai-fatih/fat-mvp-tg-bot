@@ -1,46 +1,53 @@
 // src/bot/handlers/messageHandler.js
 
-import { state, telegram } from '../../utils/index.js';
-import { messageService } from '../services/messageService.js'; 
-import { chatService } from '../services/chatService.js';
+import { uiService, questionService, messageService } from '../services/index.js';
 
 /**
  * Обработчик входящих текстовых сообщений
- * - Показывает подтверждение "Добавить вопрос?"
- * - Хранит временный вопрос (temp_question)
- * - Запоминает ID сообщения пользователя
+ * Отвечает ТОЛЬКО за:
+ * - приём текста пользователя
+ * - передачу его в questionService
+ * - показ UI подтверждения
  */
 export async function messageHandler(bot, msg) {
     const chatId = msg.chat.id;
     const text = msg.text;
 
-    // игнорируем команды
+    // Игнорируем команды и пустые сообщения
     if (!text || text.startsWith('/')) return;
 
-    const userMsgId = msg.message_id;
-    const chatState = state.getState(chatId);
-
     try {
-        // Формируем клавиатуру подтверждения
-        const keyboard = telegram.keyboards.confirmCancel()
+        // Регистрируем сообщение пользователя как служебное
+        // (чтобы потом подчистить подтверждение)
+        await uiService.registerMessage(chatId, msg.message_id);
 
-        // Отправляем пользователю подтверждение
-        await messageService.sendMessage(
+        // Сохраняем временный вопрос через сервис
+        const result = questionService.setTempQuestion(chatId, text, {
+            sourceMessageId: msg.message_id,
+        });
+
+        if (!result.ok) {
+            await uiService.toast(bot, chatId, 'Не удалось обработать сообщение');
+            return;
+        }
+
+        // Формируем клавиатуру подтверждения
+        const keyboard = messageService.buildConfirmCancelKeyboard();
+
+        // Отправляем подтверждение пользователю
+        const confirmMsg = await messageService.sendMessage(
             bot,
             chatId,
-            `<b>Ваш вопрос:</b>\n\n<i>- "${text}"</i>\n`,
+            `<b>Ваш вопрос:</b>\n\n<i>«${text}»</i>`,
             { reply_markup: keyboard }
         );
 
-        // Сохраняем контекст   
-        chatState.serviceMsgId.push(userMsgId);
-        state.setState(chatId, 'serviceMsgId', chatState.serviceMsgId);
-        state.setState(chatId, 'lastUserMessageId', userMsgId);
-        state.setState(chatId, 'tempQuestion', text);
-
-        console.log(`[messageHandler] Обновлённое состояние:`, state.getState(chatId));
+        // Подтверждение тоже считаем служебным
+        if (confirmMsg?.message_id) {
+            await uiService.registerMessage(chatId, confirmMsg.message_id);
+        }
 
     } catch (err) {
-        console.error("[MESSAGE] Ошибка:", err);
+        console.error('[MESSAGE_HANDLER] Ошибка:', err);
     }
 }

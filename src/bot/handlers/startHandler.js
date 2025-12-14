@@ -1,34 +1,35 @@
 // src/bot/handlers/startHandler.js
-import { state } from '../../utils/index.js';
-import { chatService } from '../services/chatService.js';
 
+import { state } from '../../utils/index.js';
+import { uiService, chatService } from '../services/index.js';
+
+/**
+ * /start
+ * Инициализация чата и отрисовка стартового экрана
+ */
 export async function startHandler(bot, msg) {
     const chatId = msg.chat.id;
     const username = msg.from.username || msg.from.first_name;
     const userMsgId = msg.message_id;
 
     try {
-        const chatState = state.getState(chatId) || {};
 
-        // Гарантируем массив
-        const serviceMsgId = Array.isArray(chatState.serviceMsgId)
-            ? [...chatState.serviceMsgId, userMsgId]
-            : [userMsgId];
+    // 1. Регистрируем /start как служебное (если нужно)
+       await uiService.registerMessage(chatId, userMsgId);
+ 
+       // 2. Чистим мусор от прошлых сессий
+       await uiService.clearAll(bot, chatId);
 
-        // Сохраняем обновления
-        state.setState(chatId, 'chatId', chatId);
-        state.setState(chatId, 'username', username);
-        state.setState(chatId, 'serviceMsgId', serviceMsgId);
+       // 3. Инициализируем состояние
+       state.setMany(chatId, {
+           chatId,
+           username,
+       }); 
 
-        // Устанавливаем глобальный статус
-        state.updateChatStatus(chatId, 'EMPTY');
-
-        // Перерисовываем активное сервис-сообщение
-        await chatService.updateQuestionsList(bot, chatId);
-
-        console.log('стейт после /start', chatState)
+       // 4. Рисуем стартовый экран
+       await chatService.updateQuestionsList(bot, chatId);
 
     } catch (err) {
-        console.error("[START] Ошибка:", err);
+        console.error('[START] Ошибка:', err);
     }
 }

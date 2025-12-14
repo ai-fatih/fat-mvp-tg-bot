@@ -1,4 +1,4 @@
-// /utils/telegram/safeSend.js
+// /utils/telegram/safe.js
 import { logger } from '../helpers/logger.js';
 
 /**
@@ -39,7 +39,6 @@ export async function safeSend(bot, chatId, text, options = {}, retries = 3) {
 
     return sentMessage;
 }
-
 /**
  * Вспомогательная функция для редактирования сообщений
  *
@@ -51,18 +50,53 @@ export async function safeSend(bot, chatId, text, options = {}, retries = 3) {
  */
 export async function safeEdit(bot, chatId, messageId, text, options = {}) {
     try {
-        const msg = await bot.editMessageText(text, {
-            chat_id: chatId,
-            message_id: messageId,
-            parse_mode: 'HTML',
-            ...options,
-        });
-        logger.debug(`[EDIT] chatId=${chatId}, message_id=${messageId}`);
-        return msg;
+      await bot.editMessageText(text, {
+        chat_id: chatId,
+        message_id: messageId,
+        ...options,
+      });
+      return true;
     } catch (err) {
-        logger.warn(`[EDIT] Не удалось изменить сообщение ${messageId} в chatId=${chatId}: ${err?.message}`);
-        return null;
+      const msg = err?.response?.body?.description || err.message;
+  
+      if (msg?.includes('message is not modified')) {
+        return 'NOT_MODIFIED';
+      }
+  
+      if (
+        msg?.includes('message to edit not found') ||
+        msg?.includes('message identifier is not specified') ||
+        msg?.includes('message can\'t be edited')
+      ) {
+        return 'NOT_FOUND';
+      }
+  
+      // всё остальное — настоящая ошибка
+      throw err;
     }
+  }
+export async function safeDelete(bot, chatId, msgId) {
+    try {
+      await bot.deleteMessage(chatId, msgId);
+      return true;
+    } catch (e) {
+      // Telegram часто кидает "message can't be deleted"
+      logger.debug(
+        `[UI] delete failed msg=${msgId} chat=${chatId}: ${e.message}`
+      );
+      return false;
+    }
+  }
+export async function safeDeleteWithRetry(bot, chatId, msgId, retries = 2) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await bot.deleteMessage(chatId, msgId);
+      return true;
+    } catch (e) {
+      if (i === retries - 1) return false;
+      await new Promise(r => setTimeout(r, 500));
+    }
+  }
 }
 
-export default { safeSend, safeEdit };
+

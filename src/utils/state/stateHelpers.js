@@ -8,6 +8,9 @@ export function getState(chatId) {
 export function setState(chatId, key, value) {
   chatState.set(chatId, key, value);
 }
+export function setMany(chatId, obj) {
+  return chatState.setMany(chatId, obj);
+}
 export function addServiceMessage(chatId, messageId) {
   const state = getState(chatId);
 
@@ -90,12 +93,16 @@ export function clearQuestionsMessageId(chatId) {
     state.questionsMsgId = null;
     logger.debug(`[STATE] questionsMsgId cleared (chatId=${chatId})`);
   }
+export function getMaxQuestions(chatId) {
+    const s = getState(chatId);
+    return s.maxQuestions ?? chatState.DEFAULT_MAX;
+  }  
 // обработка статусов
-  export function getChatStatus(chatId) {
+export function getChatStatus(chatId) {
     const s = getState(chatId) || {};
     return determineStatus(s);
   }
-  export function updateChatStatus(chatId, status) {
+export function updateChatStatus(chatId, status) {
     try {
       return sm.setChatStatus(chatId, status);
     } catch (e) {

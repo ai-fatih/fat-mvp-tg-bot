@@ -14,6 +14,7 @@
 class ChatState {
   constructor() {
     this.state = new Map(); // { chatId: { ...state } }
+    this.DEFAULT_MAX = 2; // Глобальный лимит вопросов
   }
 
   /**
@@ -35,6 +36,21 @@ class ChatState {
     chat[key] = value;
     chat.updatedAt = Date.now();
   }
+
+  /**
+ * Установить сразу набор полей состояния.
+ */
+  setMany(chatId, entries = {}) {
+    const chat = this.get(chatId);
+
+    Object.entries(entries).forEach(([key, value]) => {
+      chat[key] = value;
+    });
+
+    chat.updatedAt = Date.now();
+    return chat;
+  }
+
 
   /**
    * Добавить ID сервисного сообщения (для последующего удаления).
@@ -127,16 +143,20 @@ getQuestionsMsgId(chatId) {
       chatId,
       questions: [],          // { text, answer?, createdAt }
       
-      // временные сообщения — удаляем после обновлений экрана
-      serviceMsgId: [],       // массив активных сервисных сообщений
-      serviceHistory: [],     // история массивов serviceMsgId
+      // временные сообщения — удаляем после колбеков
+      serviceMsgId: [],       // массив сервисных сообщений на удаление
+      serviceHistory: [],     // история массивов serviceMsgId сохраняется перед удалением
       
       // сообщение со списком вопросов, которое НЕ удаляем (единичное)
       questionsMsgId: null,   // numeric message_id (или null)
 
       lastUserMessageId: null,
       tempQuestion: null,
-      status: 'EMPTY',           // ENUM: WELCOME | FIRST | ACTIVE | LIMIT | SENT | CLEARED | RESUMED
+
+      // Лимит вопросов для чата (можно менять индивидуально)
+      maxQuestions: this.DEFAULT_MAX,
+
+      status: 'EMPTY',           // ENUM
       updatedAt: Date.now()
     };
   }
