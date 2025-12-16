@@ -3,6 +3,7 @@
 import { state } from '../../../utils/index.js';
 import { uiService, chatService, questionService } from '../../services/index.js';
 import { logger } from '../../../utils/helpers/logger.js';
+import { questionFirebase } from '../../../firebase/question.firebase.js';
 
 /**
  * confirm_question
@@ -10,6 +11,7 @@ import { logger } from '../../../utils/helpers/logger.js';
  */
 export async function confirmQuestion(bot, ctx) {
   const { chatId, messageId } = ctx;
+  const chatState = state.getState(chatId);
 
   logger.info('[CALLBACK] confirm_question', {
     chatId,
@@ -24,35 +26,8 @@ export async function confirmQuestion(bot, ctx) {
   questionService.addQuestion(chatId, {
     sourceMessageId: messageId,
   });
+  await questionFirebase.save(chatId, chatState.questions);
   
-  /* if (!result.ok) {
-    switch (result.reason) {
-      case 'LIMIT':
-        await uiService.toast(
-          bot,
-          chatId,
-          `⚠️ Лимит ${result.max} вопросов достигнут.`
-        );
-        break;
-
-      case 'SHORT':
-        await uiService.toast(
-          bot,
-          chatId,
-          'Вопрос слишком короткий.'
-        );
-        break;
-
-      default:
-        await uiService.toast(
-          bot,
-          chatId,
-          'Не удалось добавить вопрос.'
-        );
-    }
-    return;
-  } */
- 
   // 4️⃣ Обновляем сценарный статус
   state.updateChatStatus(chatId, 'COLLECTING');
 
