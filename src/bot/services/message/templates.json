@@ -6,11 +6,11 @@
     "btns": null
   },
   "COLLECTING": {
-    "header": "Вопрос добавлен 🎄",
+    "header": "Список ваших вопросов 🎄",
     "body": "{questionsList}",
-    "footer": "Отправьте вопросы менеджеру на обработку\nНапишите следующий вопрос, чтобы продолжить ✏️",
+    "footer": "Напишите вопрос и отправьте его менеджеру в работу, чтобы получить ответ ✏️",
     "btns": [
-      { "text": "🚀 Отправить в работу", "action": "send_questions" },
+      { "text": "Отправить в работу 🚀", "action": "send_questions" },
       [
         { "text": "🔄 Обновить", "action": "refresh_questions" },
         { "text": "🧹 Очистить", "action": "clear_questions" }

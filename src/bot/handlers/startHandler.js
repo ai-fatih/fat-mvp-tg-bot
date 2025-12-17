@@ -11,6 +11,7 @@ import { questionFirebase } from '../../firebase/question.firebase.js';
 export async function startHandler(bot, msg) {
     const chatId = msg.chat.id;
     const username = msg.from.username || msg.from.first_name;
+    console.log(msg.from)
     const userMsgId = msg.message_id;
 
     try {
@@ -26,7 +27,12 @@ export async function startHandler(bot, msg) {
            chatId,
            username,
        }); 
-            
+            // 👉 4. приветственная картинка (один раз)
+    await bot.sendPhoto(
+        chatId,
+        'src/images/hello.png',
+        { caption: `${msg.from.first_name} ${msg.from.last_name}👋 добро пожаловать!` }
+      );
         // 4. Инициализация чата в Firebase
             let questions = [];
             try {
@@ -36,6 +42,7 @@ export async function startHandler(bot, msg) {
             }
         // 5. Кладём вопросы в state
         state.setState(chatId, 'questions', Array.isArray(questions) ? questions : []);
+        state.setState(chatId, 'status', Array.isArray(questions) ? 'COLLECTING' : 'EMPTY');
 
 
        // 4. Рисуем стартовый экран

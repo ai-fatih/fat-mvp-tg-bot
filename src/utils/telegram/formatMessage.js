@@ -88,6 +88,13 @@ export function buildQuestionsList(questions) {
     .map((q, idx) => {
       const status = q.status ?? "—";
       const answer = q.answer ?? "—";
+      const STATUS_EMOJI = {
+        "черновик (отправьте в работу)": "⚪️",      // черновик (нейтральный / серый)
+        "в работе": "🔵", // в работе (синий)
+        "готово": "🟢",        // готово (зелёный)
+      };
+      const statusIcon = STATUS_EMOJI[q.status] ?? "⚪️";
+
 
       const shortQuestion =
         q.question.length > 60
@@ -99,7 +106,7 @@ export function buildQuestionsList(questions) {
       return (
         `<b>${num} Вопрос:</b> ${shortQuestion}\n` +
         `       <b>Ответ:</b> ${answer}\n` +
-        `<i>       Статус ${status}\n` +
+        `<i>${statusIcon} Статус ${status}\n` +
         `       Создан ${formatDate(q.createdAt)}</i>`
       );
     })

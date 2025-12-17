@@ -23,7 +23,6 @@ export class ChatService {
     const chatState = state.getState(chatId);
 
     if (!chatState.questions) chatState.questions = [];
-    if (chatState.questions.length >= 20) return false;
 
     const id = chatState.questions.length + 1;
     chatState.questions.push({ id, question, answer: null });
@@ -59,6 +58,7 @@ export class ChatService {
   async updateQuestionsList(bot, chatId, options = {}, deleteOld = true) {
     const chatState = state.getState(chatId); 
     const status = state.getChatStatus(chatId); 
+    console.log(status)
     const { text, reply_markup } = buildServiceMessage(status, chatState.questions);
     const sendOptions = { parse_mode: 'HTML', reply_markup }; 
     let questionsMsgId = chatState.questionsMsgId;
