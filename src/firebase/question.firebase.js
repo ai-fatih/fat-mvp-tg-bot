@@ -6,10 +6,17 @@ import {
 } from 'firebase/firestore';
 
 /**
- * Работа с вопросами чата (Firestore v9)
+ * Firebase persistence слоя для ChatState
+ * Firebase = источник истины (persisted state)
+ * chatState (Map) = runtime cache
  */
 export const questionFirebase = {
 
+  /**
+   * Инициализация чата
+   * - если есть → возвращаем сохранённый state
+   * - если нет → создаём дефолтный snapshot
+   */
   async initChat(chatId) {
     if (!chatId) throw new Error('chatId is required');
 
@@ -17,33 +24,72 @@ export const questionFirebase = {
     const snap = await getDoc(ref);
 
     if (snap.exists()) {
-      return snap.data()?.questions ?? [];
+      return {
+        exists: true,
+        state: snap.data(),
+      };
     }
 
-    // чата нет → создаём
-    await setDoc(ref, {
+    // дефолтный persisted state
+    const initialState = {
+      chatId,
+
+      // бизнес
       questions: [],
+      status: 'EMPTY',
+
+      // UX / сценарий
+      tempQuestion: null,
+
+      // UI
+      questionsMsgId: null,
+      serviceMsgId: [],
+      serviceHistory: [],
+
+      // ограничения
+      maxQuestions: 20,
+
       createdAt: Date.now(),
       updatedAt: Date.now(),
-    });
+    };
 
-    return [];
+    await setDoc(ref, initialState);
+
+    return {
+      exists: false,
+      state: initialState,
+    };
   },
 
-  async save(chatId, questions) {
+  /**
+   * Сохранение состояния чата
+   * Принимает ВЕСЬ state, фильтрует runtime-поля
+   */
+  async save(chatId, state) {
     if (!chatId) throw new Error('chatId is required');
-    if (!Array.isArray(questions)) throw new Error('questions must be an array');
+    if (!state || typeof state !== 'object') {
+      throw new Error('state must be an object');
+    }
+
+    /**
+     * runtime-поля, которые не имеют смысла
+     * хранить между перезапусками
+     */
+    const {
+      lastUserMessageId, // одноразовый
+      ...persistedState
+    } = state;
 
     const ref = doc(db, 'chats', String(chatId));
 
     await setDoc(
       ref,
       {
-        questions,
+        ...persistedState,
         updatedAt: Date.now(),
       },
       { merge: true }
     );
-  }
- 
+  },
+
 };

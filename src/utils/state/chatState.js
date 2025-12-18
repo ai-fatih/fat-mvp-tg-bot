@@ -14,7 +14,7 @@
 class ChatState {
   constructor() {
     this.state = new Map(); // { chatId: { ...state } }
-    this.DEFAULT_MAX = 2; // Глобальный лимит вопросов
+    this.DEFAULT_MAX = 20; // Глобальный лимит вопросов
   }
 
   /**

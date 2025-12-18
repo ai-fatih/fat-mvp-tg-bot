@@ -26,7 +26,6 @@ export async function confirmQuestion(bot, ctx) {
   questionService.addQuestion(chatId, {
     sourceMessageId: messageId,
   });
-  await questionFirebase.save(chatId, chatState.questions);
   
   // 4️⃣ Обновляем сценарный статус
   state.updateChatStatus(chatId, 'COLLECTING');
@@ -37,4 +36,6 @@ export async function confirmQuestion(bot, ctx) {
     bot,
     chatId
   );
+  
+  await questionFirebase.save(chatId, chatState);
 }

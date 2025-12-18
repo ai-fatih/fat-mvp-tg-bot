@@ -3,52 +3,86 @@
 import { state } from '../../utils/index.js';
 import { uiService, chatService } from '../services/index.js';
 import { questionFirebase } from '../../firebase/question.firebase.js';
+const { chatState } = state
 
 /**
  * /start
- * Инициализация чата и отрисовка стартового экрана
+ * Восстановление или инициализация чата
+ * Firebase = источник истины
  */
 export async function startHandler(bot, msg) {
-    const chatId = msg.chat.id;
-    const username = msg.from.username || msg.from.first_name;
-    console.log(msg.from)
-    const userMsgId = msg.message_id;
+  const chatId = msg.chat.id;
+  const username = msg.from.username || msg.from.first_name;
+  const userMsgId = msg.message_id;
 
-    try {
+  try {
+    /**
+     * 1. Регистрируем сообщение /start как служебное
+     * Нужно, чтобы не удалить его при clearAll
+     */
+    await uiService.registerMessage(chatId, userMsgId);
 
-    // 1. Регистрируем /start как служебное (если нужно)
-       await uiService.registerMessage(chatId, userMsgId);
- 
-       // 2. Чистим мусор от прошлых сессий
-       await uiService.clearAll(bot, chatId);
+    /**
+     * 2. Чистим UI от мусора прошлой сессии
+     * (сообщения бота, кнопки и т.д.)
+     */
+    await uiService.clearAll(bot, chatId);
 
-       // 3. Инициализируем состояние
-       state.setMany(chatId, {
-           chatId,
-           username,
-       }); 
-            // 👉 4. приветственная картинка (один раз)
-    await bot.sendPhoto(
+    /**
+     * 3. Минимальная инициализация local state
+     * ВАЖНО: делаем это ДО Firebase
+     * чтобы state существовал даже при ошибке БД
+     */
+    state.setMany(chatId, {
+      chatId,
+      username,
+    });
+
+    /**
+     * 4. Загружаем persisted state из Firebase
+     * или создаём дефолтный
+     */
+    const { state: firebaseState } =
+      await questionFirebase.initChat(chatId);
+
+    /**
+     * 5. Восстанавливаем состояние
+     * defaultState → firebaseState
+     * (firebase имеет приоритет)
+     */
+    state.setMany(chatId, {
+      ...chatState._defaultState(chatId),
+      ...firebaseState,
+    });
+
+    /**
+     * 6. Приветственный экран (один раз)
+     * Используем persisted-флаг
+     */
+    const currentState = state.getState(chatId);
+
+    if (!currentState.helloShown) {
+      await bot.sendPhoto(
         chatId,
         'src/images/hello.png',
-        { caption: `${msg.from.first_name} ${msg.from.last_name}👋 добро пожаловать!` }
+        {
+          caption: `${msg.from.first_name || ''} 👋 добро пожаловать!`,
+        }
       );
-        // 4. Инициализация чата в Firebase
-            let questions = [];
-            try {
-            questions = await questionFirebase.initChat(chatId);
-            } catch (err) {
-            console.error('[START] Firebase init failed', err);
-            }
-        // 5. Кладём вопросы в state
-        state.setState(chatId, 'questions', Array.isArray(questions) ? questions : []);
-        state.setState(chatId, 'status', Array.isArray(questions) ? 'COLLECTING' : 'EMPTY');
 
+      state.setState(chatId, 'helloShown', true);
 
-       // 4. Рисуем стартовый экран
-       await chatService.updateQuestionsList(bot, chatId);
-
-    } catch (err) {
-        console.error('[START] Ошибка:', err);
+      // фиксируем в Firebase
+      await questionFirebase.save(chatId, state.getState(chatId));
     }
+
+    /**
+     * 7. Отрисовываем UI согласно status
+     * НИКАКИХ вычислений из questions.length
+     */
+    await chatService.updateQuestionsList(bot, chatId);
+
+  } catch (err) {
+    console.error('[START] Ошибка:', err);
+  }
 }
