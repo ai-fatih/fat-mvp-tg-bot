@@ -3,6 +3,7 @@
 import { uiService, chatService } from '../../services/index.js';
 import { state } from '../../../utils/index.js';
 import { logger } from '../../../utils/helpers/logger.js';
+import { questionFirebase } from '../../../firebase/question.firebase.js';
 
 /**
  * clear_questions
@@ -16,24 +17,31 @@ export async function clearQuestions(bot, ctx) {
     messageId,
   });
 
-  // 1️⃣ Регистрируем callback
+  // 1️⃣ Регистрируем callback как служебный
   await uiService.registerMessage(chatId, messageId);
 
-  // 2️⃣ Сбрасываем состояние вопросов
+  // 2️⃣ Бизнес-изменение: очищаем вопросы
   state.setMany(chatId, {
     questions: [],
     tempQuestion: null,
   });
 
-  // ⚠️ статус НЕ трогаем (ты это уже правильно поймал раньше)
+  // ⚠️ статус чата НЕ трогаем
+  // сценарный статус решается отдельно (и ты это правильно отметил)
 
-  // 3️⃣ Обновляем UI
+  // 3️⃣ Фиксируем изменения в Firebase
+  await questionFirebase.save(
+    chatId,
+    state.getState(chatId)
+  );
+
+  // 4️⃣ Перерисовываем главный экран
   await uiService.refreshScreen(
     chatService.updateQuestionsList,
     bot,
     chatId
   );
 
-  // 4️⃣ UX-подсказка
-  /* await uiService.toast(bot, chatId, '🧹 Список вопросов очищен'); */
+  // 5️⃣ UX-подсказка (по желанию)
+  // await uiService.toast(bot, chatId, '🧹 Список вопросов очищен');
 }

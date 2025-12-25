@@ -311,3 +311,48 @@
 [INFO] 2025-12-18T09:24:59.111Z [QUESTION] statuses updated → в работе (chatId=459797765)
 [INFO] 2025-12-18T09:24:59.263Z [CALLBACK] questions sent to work [object Object]
 [WARN] 2025-12-18T09:50:33.193Z [CALLBACK] clear_questions [object Object]
+[WARN] 2025-12-23T08:18:17.549Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T08:18:17.590Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-23T09:49:07.970Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T09:49:08.056Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-23T09:54:59.445Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T09:54:59.485Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-23T09:55:50.922Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-23T09:55:50.925Z [QUESTION] added (chatId=7798225362, id=1766483750924)
+[WARN] 2025-12-23T09:59:51.217Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T09:59:51.280Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-23T10:00:10.793Z [CALLBACK] send_questions [object Object]
+[INFO] 2025-12-23T10:00:10.793Z [QUESTION] statuses updated → в работе (chatId=459797765)
+[INFO] 2025-12-23T10:00:10.868Z [CALLBACK] questions sent to work [object Object]
+[WARN] 2025-12-23T10:00:18.473Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T10:00:18.538Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-23T10:06:07.188Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T10:06:07.241Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-23T10:32:32.785Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T10:32:32.834Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-23T10:34:30.100Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T10:34:30.149Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-23T10:45:26.027Z [CHAT] main UI message lost → recreating [object Object]
+[WARN] 2025-12-23T10:46:35.997Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-23T10:46:36.363Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-23T10:57:27.673Z [CALLBACK] send_questions [object Object]
+[INFO] 2025-12-23T10:57:27.674Z [QUESTION] statuses updated → в работе (chatId=459797765)
+[INFO] 2025-12-23T10:57:28.077Z [CALLBACK] questions sent to work [object Object]
+[ERROR] 2025-12-25T21:30:51.577Z [CALLBACK] handler failed [object Object]
+[WARN] 2025-12-25T21:33:18.623Z [CALLBACK] clear_questions [object Object]
+[WARN] 2025-12-25T21:33:30.092Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-25T21:33:30.496Z [CHAT] main UI recreated [object Object]
+[WARN] 2025-12-25T21:37:15.742Z [CALLBACK] clear_questions [object Object]
+[WARN] 2025-12-25T21:37:16.313Z [CHAT] main UI message lost → recreating [object Object]
+[INFO] 2025-12-25T21:37:16.591Z [CHAT] main UI recreated [object Object]
+[INFO] 2025-12-25T21:37:42.009Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-25T21:37:42.011Z [QUESTION] added (chatId=459797765, id=1766698662010)
+[INFO] 2025-12-25T21:37:52.037Z [CALLBACK] send_questions [object Object]
+[INFO] 2025-12-25T21:37:52.038Z [QUESTION] statuses updated → в работе (chatId=459797765)
+[INFO] 2025-12-25T21:37:52.309Z [CALLBACK] questions sent to work [object Object]
+[INFO] 2025-12-25T21:38:01.908Z [CALLBACK] confirm_question [object Object]
+[INFO] 2025-12-25T21:38:01.909Z [QUESTION] added (chatId=459797765, id=1766698681909)
+[INFO] 2025-12-25T21:40:30.839Z [CALLBACK] send_questions [object Object]
+[INFO] 2025-12-25T21:40:30.840Z [QUESTION] statuses updated → в работе (chatId=459797765)
+[INFO] 2025-12-25T21:40:31.323Z [CALLBACK] questions sent to work [object Object]
+[WARN] 2025-12-25T21:40:37.744Z [CALLBACK] clear_questions [object Object]

@@ -1,3 +1,5 @@
+// src/firebase/question.firebase.js
+
 import { db } from './firebase.js';
 import {
   doc,
@@ -7,15 +9,42 @@ import {
 
 /**
  * Firebase persistence слоя для ChatState
- * Firebase = источник истины (persisted state)
- * chatState (Map) = runtime cache
+ *
+ * Принципы:
+ * - Firebase = persisted snapshot
+ * - Никакой бизнес-логики
+ * - Никакого UI
+ * - Никакого merge state → этим занимается runtime
  */
 export const questionFirebase = {
 
   /**
+   * 🔹 READ ONLY
+   * Безопасное получение persisted state
+   * - НЕ создаёт документ
+   * - НЕ мутирует данные
+   * - Используется для refresh / внешней синхронизации
+   */
+  async getChat(chatId) {
+    if (!chatId) throw new Error('chatId is required');
+
+    const ref = doc(db, 'chats', String(chatId));
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      return null;
+    }
+
+    return snap.data();
+  },
+
+  /**
+   * 🔹 INIT (cold start)
    * Инициализация чата
    * - если есть → возвращаем сохранённый state
    * - если нет → создаём дефолтный snapshot
+   *
+   * Использовать ТОЛЬКО в /start
    */
   async initChat(chatId) {
     if (!chatId) throw new Error('chatId is required');
@@ -30,7 +59,7 @@ export const questionFirebase = {
       };
     }
 
-    // дефолтный persisted state
+    // дефолтный persisted snapshot
     const initialState = {
       chatId,
 
@@ -40,8 +69,9 @@ export const questionFirebase = {
 
       // UX / сценарий
       tempQuestion: null,
+      helloShown: false,
 
-      // UI
+      // UI (Telegram-specific)
       questionsMsgId: null,
       serviceMsgId: [],
       serviceHistory: [],
@@ -62,8 +92,13 @@ export const questionFirebase = {
   },
 
   /**
+   * 🔹 WRITE
    * Сохранение состояния чата
-   * Принимает ВЕСЬ state, фильтрует runtime-поля
+   * - принимает ВЕСЬ runtime state
+   * - фильтрует runtime-only поля
+   * - делает merge
+   *
+   * Вызывать ТОЛЬКО при бизнес-событиях
    */
   async save(chatId, state) {
     if (!chatId) throw new Error('chatId is required');
@@ -72,11 +107,11 @@ export const questionFirebase = {
     }
 
     /**
-     * runtime-поля, которые не имеют смысла
-     * хранить между перезапусками
+     * runtime-поля,
+     * которые не имеют смысла хранить
      */
     const {
-      lastUserMessageId, // одноразовый
+      lastUserMessageId, // одноразовый runtime
       ...persistedState
     } = state;
 
@@ -91,5 +126,4 @@ export const questionFirebase = {
       { merge: true }
     );
   },
-
 };

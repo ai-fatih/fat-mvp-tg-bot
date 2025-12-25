@@ -3,6 +3,8 @@
 import { uiService, questionService, chatService } from '../../services/index.js';
 import { state } from '../../../utils/index.js';
 import { logger } from '../../../utils/helpers/logger.js';
+import { questionFirebase } from '../../../firebase/question.firebase.js';
+
 
 /**
  * send_questions
@@ -33,7 +35,13 @@ export async function sendQuestionsToWork(bot, ctx) {
   // 4️⃣ Обновляем сценарный статус чата
   state.updateChatStatus(chatId, 'SENT_TO_MANAGER');
 
-  // 5️⃣ Перерисовываем главный экран
+  // 🔐 5️⃣ Фиксируем изменения в Firebase
+  await questionFirebase.save(
+    chatId,
+    state.getState(chatId)
+  );
+
+  // 6️⃣ Перерисовываем главный экран
   await uiService.refreshScreen(
     chatService.updateQuestionsList,
     bot,

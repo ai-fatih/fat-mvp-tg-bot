@@ -2,6 +2,7 @@
 import { state, telegram, helpers } from '../../utils/index.js'; 
 import { buildServiceMessage } from './message/build.js'; 
 import { uiService } from './index.js';
+import { questionFirebase } from '../../firebase/question.firebase.js';
 
 const { safeSend, safeEdit } = telegram;
 const { logger } = helpers
@@ -94,7 +95,10 @@ export class ChatService {
       
         if (sent?.message_id) {
           state.setState(chatId, 'questionsMsgId', sent.message_id);
-      
+          await questionFirebase.save(
+            chatId,
+            state.getState(chatId)
+          );
           logger.info('[CHAT] main UI recreated', {
             chatId,
             messageId: sent.message_id,

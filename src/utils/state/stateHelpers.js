@@ -110,3 +110,93 @@ export function updateChatStatus(chatId, status) {
       return null;
     }
   }
+
+
+  /**
+ * 🔄 Merge данных из Firebase в runtime state
+ * Используется для refresh / внешней синхронизации
+ */
+export function mergeFromFirebase(chatId, firebaseState) {
+  if (!firebaseState) {
+    logger.debug('[STATE] mergeFromFirebase: empty firebaseState');
+    return;
+  }
+
+  const localState = getState(chatId);
+  if (!localState) {
+    logger.warn('[STATE] mergeFromFirebase: no local state', { chatId });
+    return;
+  }
+
+  let changed = false;
+
+  /**
+   * 1️⃣ Merge глобального статуса чата
+   */
+  if (
+    firebaseState.status &&
+    firebaseState.status !== localState.status
+  ) {
+    updateChatStatus(chatId, firebaseState.status);
+    changed = true;
+
+    logger.debug('[STATE] status merged from firebase', {
+      chatId,
+      status: firebaseState.status,
+    });
+  }
+
+  /**
+   * 2️⃣ Merge вопросов (answer + status)
+   */
+  if (
+    Array.isArray(firebaseState.questions) &&
+    Array.isArray(localState.questions)
+  ) {
+    const mergedQuestions = localState.questions.map(localQ => {
+      const remoteQ = firebaseState.questions.find(
+        fq => fq.id === localQ.id
+      );
+
+      if (!remoteQ) return localQ;
+
+      let questionChanged = false;
+      const merged = { ...localQ };
+
+      if (
+        remoteQ.answer !== undefined &&
+        remoteQ.answer !== localQ.answer
+      ) {
+        merged.answer = remoteQ.answer;
+        questionChanged = true;
+      }
+
+      if (
+        remoteQ.status &&
+        remoteQ.status !== localQ.status
+      ) {
+        merged.status = remoteQ.status;
+        questionChanged = true;
+      }
+
+      if (questionChanged) {
+        changed = true;
+
+        logger.debug('[STATE] question merged from firebase', {
+          chatId,
+          questionId: localQ.id,
+        });
+      }
+
+      return merged;
+    });
+
+    if (changed) {
+      setState(chatId, 'questions', mergedQuestions);
+    }
+  }
+
+  if (!changed) {
+    logger.debug('[STATE] mergeFromFirebase: no changes', { chatId });
+  }
+}

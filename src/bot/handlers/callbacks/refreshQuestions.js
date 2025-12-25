@@ -1,7 +1,8 @@
 // src/bot/handlers/callbacks/refreshQuestions.js
-
+import { state } from '../../../utils/index.js';
 import { uiService, chatService } from '../../services/index.js';
 import { logger } from '../../../utils/helpers/logger.js';
+import { questionFirebase } from '../../../firebase/question.firebase.js';
 
 /**
  * refresh_questions
@@ -18,10 +19,16 @@ export async function refreshQuestions(bot, ctx) {
   // Регистрируем callback как служебный
   await uiService.registerMessage(chatId, messageId);
 
-  // Просто перерисовываем экран
-  await uiService.refreshScreen(
-    chatService.updateQuestionsList,
-    bot,
-    chatId
-  );
+  const firebaseState = await questionFirebase.getChat(chatId);
+
+if (firebaseState) {
+  state.mergeFromFirebase(chatId, firebaseState);
+}
+
+await uiService.refreshScreen(
+  chatService.updateQuestionsList,
+  bot,
+  chatId
+);
+
 }
