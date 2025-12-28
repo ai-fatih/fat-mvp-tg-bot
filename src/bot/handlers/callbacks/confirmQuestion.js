@@ -11,7 +11,17 @@ import { questionFirebase } from '../../../firebase/question.firebase.js';
  */
 export async function confirmQuestion(bot, ctx) {
   const { chatId, messageId } = ctx;
-  const chatState = state.getState(chatId);
+  let chatState = state.getState(chatId);
+ 
+
+  if (!chatState?.isHydrated) {
+    const firebaseState = await questionFirebase.getChat(chatId);
+    console.log('подгрузка', firebaseState)
+    if (firebaseState) { 
+      state.setMany(chatId, firebaseState, { hydrate: true });
+      console.log('ПРОВЕРКА', state.getState(chatId))
+    }
+  }
 
   logger.info('[CALLBACK] confirm_question', {
     chatId,
@@ -30,12 +40,14 @@ export async function confirmQuestion(bot, ctx) {
   // 4️⃣ Обновляем сценарный статус
   state.updateChatStatus(chatId, 'COLLECTING');
 
+   
   // 5️⃣ Перерисовываем главный экран
   await uiService.refreshScreen(
     chatService.updateQuestionsList.bind(chatService),
     bot,
     chatId
-  );
+  )
   
-  await questionFirebase.save(chatId, chatState);
+  await questionFirebase.save(chatId, state.getState(chatId));
+  
 }

@@ -24,7 +24,8 @@ export async function clearQuestions(bot, ctx) {
   state.setMany(chatId, {
     questions: [],
     tempQuestion: null,
-  });
+  }, false); 
+  
 
   // ⚠️ статус чата НЕ трогаем
   // сценарный статус решается отдельно (и ты это правильно отметил)

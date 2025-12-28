@@ -77,7 +77,7 @@ export class QuestionService {
       question: text.trim(),
       answer: null,
       files: [],
-      status: "черновик (отправьте в работу)",
+      status: "process",
       createdAt: new Date().toISOString(),
 
       // доп. данные
@@ -94,7 +94,7 @@ export class QuestionService {
    */
   addQuestion(chatId, meta = {}) {
     const s = state.getState(chatId);
-
+console.log("в добавлении", s)
     // 1. Проверки
     const check = this.canAddQuestion(chatId);
     if (!check.ok) {
@@ -118,7 +118,7 @@ export class QuestionService {
       tempQuestion: null,
       tempQuestionMeta: null,
       chatStatus: "COLLECTING",
-    });
+    }, false);
 
     logger.info(
       `[QUESTION] added (chatId=${chatId}, id=${newQuestion.id})`
@@ -137,7 +137,7 @@ export class QuestionService {
       tempQuestionMeta: {
         sourceMessageId: meta.sourceMessageId || null,
       },
-    });
+    }, false);
 
     logger.debug(
       `[QUESTION] tempQuestion set (chatId=${chatId})`
@@ -156,7 +156,7 @@ export class QuestionService {
       tempQuestion: null,
       tempQuestionMeta: null,
       chatStatus: "COLLECTING",
-    });
+    }, false);
 
     logger.info(
       `[QUESTION] tempQuestion cancelled (chatId=${chatId})`
@@ -180,7 +180,7 @@ export class QuestionService {
       status: newStatus,
     }));
 
-    state.setMany(chatId, { questions: updated });
+    state.setMany(chatId, { questions: updated }, true);
 
     logger.info(
       `[QUESTION] statuses updated → ${newStatus} (chatId=${chatId})`

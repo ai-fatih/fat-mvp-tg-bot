@@ -16,7 +16,7 @@ export class UIService {
     if (!ids.includes(msgId)) {
       state.setMany(chatId, {
         serviceMsgId: [...ids, msgId],
-      });
+      }, false);
 
       logger.debug(
         `[UI] register serviceMsgId=${msgId} (chatId=${chatId})`
@@ -30,11 +30,6 @@ export class UIService {
    */
   async sendTempMessage(bot, chatId, text, options = {}) {
     const msg = await safeSend(bot, chatId, text, options);
-
-    /* if (msg?.message_id) {
-      await this.registerMessage(chatId, msg.message_id);
-    } */
-
     return msg;
   }
 
@@ -57,7 +52,7 @@ export class UIService {
       await safeDelete(bot, chatId, id);
     }
   
-    state.setMany(chatId, { serviceMsgId: [] });
+    state.setMany(chatId, { serviceMsgId: [] }, false);
   }
   
 
@@ -74,7 +69,7 @@ export class UIService {
 
     state.setMany(chatId, {
       serviceMsgId: ids.slice(0, -1),
-    });
+    }, false);
 
     logger.debug(
       `[UI] clearLast id=${lastId} (chatId=${chatId})`

@@ -10,6 +10,16 @@ import { questionFirebase } from '../../../firebase/question.firebase.js';
  */
 export async function refreshQuestions(bot, ctx) {
   const { chatId, messageId } = ctx;
+  let chatState = state.getState(chatId);
+  
+  if (!chatState?.isHydrated) {
+    const firebaseState = await questionFirebase.getChat(chatId);
+    console.log('подгрузка', firebaseState)
+    if (firebaseState) { 
+      state.setMany(chatId, firebaseState, { hydrate: true });
+      console.log('ПРОВЕРКА', state.getState(chatId))
+    }
+  }
 
   logger.debug('[CALLBACK] refresh_questions', {
     chatId,

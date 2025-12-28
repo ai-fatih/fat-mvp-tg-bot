@@ -51,7 +51,7 @@ export async function startHandler(bot, msg) {
     state.setMany(chatId, {
       chatId,
       username,
-    });
+    }, true);
 
     console.log('[START][AFTER_MIN_RUNTIME_INIT]', {
       runtimeState: state.getState(chatId),
@@ -74,7 +74,7 @@ export async function startHandler(bot, msg) {
     state.setMany(chatId, {
       ...chatState._defaultState(chatId),
       ...firebaseState,
-    });
+    }, true);
 
     console.log('[START][AFTER_MERGE]', {
       runtimeQuestionsMsgId: state.getState(chatId).questionsMsgId,
@@ -86,7 +86,7 @@ export async function startHandler(bot, msg) {
      */
     const currentState = state.getState(chatId);
 
-    console.log('[START][HELLO_CHECK]', {
+  /*   console.log('[START][HELLO_CHECK]', {
       helloShown: currentState.helloShown,
     });
 
@@ -107,7 +107,7 @@ export async function startHandler(bot, msg) {
 
       await questionFirebase.save(chatId, state.getState(chatId));
     }
-
+ */
     /**
      * 7. Отрисовываем UI согласно status
      */

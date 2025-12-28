@@ -30,10 +30,10 @@ export async function sendQuestionsToWork(bot, ctx) {
   }
 
   // 3️⃣ Обновляем статус всех вопросов
-  questionService.updateAllQuestionsStatus(chatId, 'в работе');
+  questionService.updateAllQuestionsStatus(chatId, 'process');
 
   // 4️⃣ Обновляем сценарный статус чата
-  state.updateChatStatus(chatId, 'SENT_TO_MANAGER');
+  //  state.updateChatStatus(chatId, 'SENT_TO_MANAGER');
 
   // 🔐 5️⃣ Фиксируем изменения в Firebase
   await questionFirebase.save(

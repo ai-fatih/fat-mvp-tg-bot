@@ -82,39 +82,50 @@ const numberEmojis = [
 ];
 
 export function buildQuestionsList(questions) {
-  if (!questions.length) return "Список пуст.";
-  console.log('Вопросы перед билдом', questions)
-  return questions
-    .map((q, idx) => {
-      const status = q.status ?? "—";
-      const answer = q.answer ?? "—";
-      const STATUS_EMOJI = {
-        "черновик (отправьте в работу)": "⚪️",      // черновик (нейтральный / серый)
-        "в работе": "🔵", // в работе (синий)
-        "готово": "🟢",        // готово (зелёный)
-      };
-      const statusIcon = STATUS_EMOJI[q.status] ?? "⚪️";
-
-
-      const shortQuestion =
-        q.question.length > 60
-          ? q.question.slice(0, 60) + "..."
-          : q.question;
-
-      const num = numberEmojis[idx] ?? `${idx + 1}.`;
-
-      return (
-        `<b>${num} Вопрос:</b> ${shortQuestion}\n` +
-        `       <b>Ответ:</b> ${answer}\n` +
-        `<i>${statusIcon} Статус ${status}\n` +
-        `       Создан ${formatDate(q.createdAt)}</i>`
-      );
-    })
-    .join("\n\n");
-}
-
-
- 
+    if (!Array.isArray(questions) || !questions.length) {
+      return 'Список пуст.';
+    }
+  
+    console.log('[UI] buildQuestionsList input', questions);
+  
+    const STATUS_META = {
+      created: {
+        text: 'черновик (отправьте в работу)',
+        emoji: '⚪️',
+      },
+      process: {
+        text: 'в работе',
+        emoji: '⚪️',
+      },
+      done: {
+        text: 'готово',
+        emoji: '🟢',
+      },
+    };
+  
+    return questions
+      .map((q, idx) => {
+        const statusKey = q.status ?? 'created';
+        const statusMeta = STATUS_META[statusKey] ?? STATUS_META.created;
+  
+        const answer = q.answer ?? '—';
+  
+        const shortQuestion =
+          q.question.length > 60
+            ? q.question.slice(0, 60) + '...'
+            : q.question;
+  
+        const num = numberEmojis[idx] ?? `${idx + 1}.`;
+  
+        return ( 
+          `<b>${num} Вопрос:</b> ${shortQuestion}\n\n` +
+          `<b>${statusMeta.emoji} Ответ:</b> ${answer || 'в работе'}\n`  
+        );
+        
+      })
+      .join('\n──────────────\n\n');
+  }
+  
 
 /** 
  * Общий экспорт

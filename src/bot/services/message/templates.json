@@ -1,25 +1,22 @@
 {
   "EMPTY": {
-    "header": "Привет 👋 здесь я отвечаю на вопросы\nпо работе со StoreHouse Pro",
-    "body": "Текущий список вопросов пуст.",
+    "header": "Привет 👋 здесь я отвечаю на вопросы\nпо работе со StoreHouse Pro\n",
+     "body": "Текущий список пуст 🎄",
     "footer": "Напиши первый вопрос, чтобы начать ✏️",
     "btns": null
   },
   "COLLECTING": {
-    "header": "Список ваших вопросов 🎄",
-    "body": "{questionsList}",
-    "footer": "Напишите вопрос и отправьте его менеджеру в работу, чтобы получить ответ ✏️",
-    "btns": [
-      { "text": "Отправить в работу 🚀", "action": "send_questions" },
-      [
-        { "text": "🔄 Обновить", "action": "refresh_questions" },
-        { "text": "🧹 Очистить", "action": "clear_questions" }
-      ]
-    ]
-  },
+    "header": "Ваш список вопросов 🎄\n",
+     "body": "{questionsList}",
+    "footer": "Напишите следующий вопрос или обновите список ✏️",
+  "btns": [
+    [{ "text": "🔄 Обновить", "action": "refresh_questions" },
+    { "text": "🧹 Очистить", "action": "clear_questions" }]
+  ]
+},
   "SENT_TO_MANAGER": {
-    "header": "Вопросы отправлены в работу 🚀",
-    "body": "{questionsList}",
+    "header": "Вопросы отправлены в работу 🚀\n",
+     "body": "{questionsList}",
     "footer": "Вопросы в работе у менеджера.\nОбновите статусы, чтобы увидеть прогресс.\nНапишите следующий вопрос, чтобы продолжить ✏️",
     "btns": [[
       { "text": "🔄 Обновить", "action": "refresh_questions" },
@@ -27,21 +24,18 @@
     ]]
   },
   "LIMIT_REACHED": {
-    "header": "Достигнут лимит вопросов - 20 🎄",
-    "body": "{questionsList}",
+    "header": "Достигнут лимит вопросов 🎄\n",
+     "body": "{questionsList}",
     "footer": "Вы можете полностью очистить список вопросов и начать заново ✏️",
     "btns": [
-      { "text": "🚀 Отправить в работу", "action": "send_questions" },
-      [
-        { "text": "🔄 Обновить", "action": "refresh_questions" },
-        { "text": "🧹 Очистить", "action": "clear_questions" }
-      ]
-    ]
-  },
+    [{ "text": "🔄 Обновить", "action": "refresh_questions" },
+    { "text": "🧹 Очистить", "action": "clear_questions" }]
+  ]
+},
   "COMPLETE": {
-    "header": "Ответы на все вопросы успешно загружены 🎄",
-    "body": "{questionsList}",
-    "footer": "Вы можете полностью очистить список вопросов и начать заново ✏️",
+    "header": "Ответы на все вопросы успешно загружены 🎄\n",
+     "body": "{questionsList}",
+    "footer": "Напишите следующий вопрос или очистите список ✏️",
     "btns": [{ "text": "🧹 Очистить", "action": "clear_questions" }]
   }
 }

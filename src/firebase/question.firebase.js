@@ -1,5 +1,3 @@
-// src/firebase/question.firebase.js
-
 import { db } from './firebase.js';
 import {
   doc,
@@ -7,23 +5,42 @@ import {
   setDoc,
 } from 'firebase/firestore';
 
+function removeUndefined(obj) {
+  if (Array.isArray(obj)) {
+    return obj
+      .filter(v => v !== undefined)
+      .map(v => removeUndefined(v));
+  }
+
+  if (obj && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([_, v]) => v !== undefined)
+        .map(([k, v]) => [k, removeUndefined(v)])
+    );
+  }
+
+  return obj;
+}
+
+
 /**
  * Firebase persistence слоя для ChatState
  *
  * Принципы:
  * - Firebase = persisted snapshot
- * - Никакой бизнес-логики
- * - Никакого UI
- * - Никакого merge state → этим занимается runtime
+ * - Без бизнес-логики
+ * - Без UI
+ * - Runtime-флаги не храним
  */
 export const questionFirebase = {
+   
 
   /**
    * 🔹 READ ONLY
-   * Безопасное получение persisted state
+   * Получение persisted state
    * - НЕ создаёт документ
-   * - НЕ мутирует данные
-   * - Используется для refresh / внешней синхронизации
+   * - Добавляет runtime-флаг isHydrated
    */
   async getChat(chatId) {
     if (!chatId) throw new Error('chatId is required');
@@ -35,15 +52,14 @@ export const questionFirebase = {
       return null;
     }
 
-    return snap.data();
+    return {
+      ...snap.data(),
+      isHydrated: true, // runtime-флаг
+    };
   },
 
   /**
    * 🔹 INIT (cold start)
-   * Инициализация чата
-   * - если есть → возвращаем сохранённый state
-   * - если нет → создаём дефолтный snapshot
-   *
    * Использовать ТОЛЬКО в /start
    */
   async initChat(chatId) {
@@ -55,11 +71,13 @@ export const questionFirebase = {
     if (snap.exists()) {
       return {
         exists: true,
-        state: snap.data(),
+        state: {
+          ...snap.data(),
+          isHydrated: true, // runtime-флаг
+        },
       };
     }
 
-    // дефолтный persisted snapshot
     const initialState = {
       chatId,
 
@@ -71,13 +89,10 @@ export const questionFirebase = {
       tempQuestion: null,
       helloShown: false,
 
-      // UI (Telegram-specific)
+      // UI
       questionsMsgId: null,
       serviceMsgId: [],
       serviceHistory: [],
-
-      // ограничения
-      maxQuestions: 20,
 
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -87,43 +102,43 @@ export const questionFirebase = {
 
     return {
       exists: false,
-      state: initialState,
+      state: {
+        ...initialState,
+        isHydrated: true, // runtime-флаг
+      },
     };
   },
 
   /**
    * 🔹 WRITE
    * Сохранение состояния чата
-   * - принимает ВЕСЬ runtime state
-   * - фильтрует runtime-only поля
-   * - делает merge
-   *
-   * Вызывать ТОЛЬКО при бизнес-событиях
+   * - принимает runtime state
+   * - удаляет runtime-only поля
+   * - сохраняет snapshot
    */
   async save(chatId, state) {
     if (!chatId) throw new Error('chatId is required');
     if (!state || typeof state !== 'object') {
       throw new Error('state must be an object');
     }
-
-    /**
-     * runtime-поля,
-     * которые не имеют смысла хранить
-     */
+  
     const {
-      lastUserMessageId, // одноразовый runtime
+      // runtime-only
+      isHydrated,
+      lastUserMessageId,
+  
+      // всё остальное — persisted
       ...persistedState
     } = state;
-
+  
+    const cleanedState = removeUndefined({
+      ...persistedState,
+      updatedAt: Date.now(),
+    });
+  
     const ref = doc(db, 'chats', String(chatId));
-
-    await setDoc(
-      ref,
-      {
-        ...persistedState,
-        updatedAt: Date.now(),
-      },
-      { merge: true }
-    );
-  },
+  
+    await setDoc(ref, cleanedState, { merge: true });
+  }
+  
 };

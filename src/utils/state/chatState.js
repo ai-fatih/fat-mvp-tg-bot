@@ -40,17 +40,31 @@ class ChatState {
   /**
  * Установить сразу набор полей состояния.
  */
-  setMany(chatId, entries = {}) {
+  setMany(chatId, entries = {}, options = { hydrate: false }) {
     const chat = this.get(chatId);
-
+  
     Object.entries(entries).forEach(([key, value]) => {
+      if (value === undefined) return;
+  
+      // при гидратации не трогаем runtime/UI поля
+      if (options.hydrate) {
+        if ([
+          'tempQuestion',
+          'tempQuestionMeta',
+          'lastUserMessageId',
+          'serviceMsgId'
+        ].includes(key)) {
+          return;
+        }
+      }
+  
       chat[key] = value;
     });
-
+  
     chat.updatedAt = Date.now();
     return chat;
   }
-
+  
 
   /**
    * Добавить ID сервисного сообщения (для последующего удаления).

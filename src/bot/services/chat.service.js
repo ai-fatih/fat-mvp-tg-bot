@@ -59,7 +59,7 @@ export class ChatService {
   async updateQuestionsList(bot, chatId, options = {}, deleteOld = true) {
     const chatState = state.getState(chatId); 
     const status = state.getChatStatus(chatId); 
-    console.log(status)
+    console.log('updateQuestionsList', status, chatState)
     const { text, reply_markup } = buildServiceMessage(status, chatState.questions);
     const sendOptions = { parse_mode: 'HTML', reply_markup }; 
     let questionsMsgId = chatState.questionsMsgId;

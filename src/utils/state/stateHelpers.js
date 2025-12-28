@@ -8,8 +8,8 @@ export function getState(chatId) {
 export function setState(chatId, key, value) {
   chatState.set(chatId, key, value);
 }
-export function setMany(chatId, obj) {
-  return chatState.setMany(chatId, obj);
+export function setMany(chatId, obj, h) {
+  return chatState.setMany(chatId, obj, h);
 }
 export function addServiceMessage(chatId, messageId) {
   const state = getState(chatId);
