@@ -1,21 +1,30 @@
-import fs from 'fs';
-import path from 'path';
-
-const logFile = path.resolve('./logs.txt');
+const isProd = process.env.NODE_ENV === 'production';
+const isDebug = process.env.DEBUG === 'true' && !isProd;
 
 export const logger = {
-    debug: (...args) => process.env.DEBUG === 'true' && console.log('[DEBUG]', ...args),
-    info: (...args) => {
-        console.log('[INFO]', ...args);
-        fs.appendFileSync(logFile, `[INFO] ${new Date().toISOString()} ${args.join(' ')}\n`);
-    },
-    warn: (...args) => {
-        console.warn('[WARN]', ...args);
-        fs.appendFileSync(logFile, `[WARN] ${new Date().toISOString()} ${args.join(' ')}\n`);
-    },
-    error: (...args) => {
-        console.error('[ERROR]', ...args);
-        fs.appendFileSync(logFile, `[ERROR] ${new Date().toISOString()} ${args.join(' ')}\n`);
-    },
-    cleanup: (...args) => console.log('[CLEANUP]', ...args),
+  debug: (...args) => {
+    if (isDebug) {
+      console.log('[DEBUG]', ...args);
+    }
+  },
+
+  info: (...args) => {
+    if (!isProd) {
+      console.log('[INFO]', ...args);
+    }
+  },
+
+  warn: (...args) => {
+    console.warn('[WARN]', ...args);
+  },
+
+  error: (...args) => {
+    console.error('[ERROR]', ...args);
+  },
+
+  cleanup: (...args) => {
+    if (!isProd) {
+      console.log('[CLEANUP]', ...args);
+    }
+  },
 };
