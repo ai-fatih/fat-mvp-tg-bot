@@ -39,4 +39,5 @@ yarn-error.log*
 
 # Зависимости
 node_modules/
- 
+
+.env
