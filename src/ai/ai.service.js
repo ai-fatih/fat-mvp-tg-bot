@@ -1,5 +1,4 @@
 // src/ai/ai.service.js
-import fetch from 'node-fetch';
 import { config } from '../config/index.js';
 import { SYSTEM_PROMPT } from './prompts/system.prompt.js';
 import { STOREHOUSE_PROMPT } from './prompts/storehouse.prompt.js';
@@ -10,6 +9,7 @@ import { STOREHOUSE_PROMPT } from './prompts/storehouse.prompt.js';
  * @returns {string|null}
  */
 export async function getAIAnswer(userQuestion) {
+  
   // 1️⃣ Базовые защиты (самые важные)
   if (!config.ai.enabled) return null;
   if (!userQuestion || typeof userQuestion !== 'string') return null;
@@ -29,6 +29,8 @@ export async function getAIAnswer(userQuestion) {
       ? userQuestion.slice(0, MAX_LENGTH)
       : userQuestion;
 
+      console.log('[AI] Question:', safeQuestion);
+
   // 4️⃣ Формирование сообщений для модели
   const messages = [
     { role: 'system', content: SYSTEM_PROMPT },
@@ -36,20 +38,25 @@ export async function getAIAnswer(userQuestion) {
     { role: 'user', content: safeQuestion }
   ];
 
-  try {
-    // 5️⃣ Запрос к OpenRouter
-    const response = await fetch(openrouter.url, {
+  console.log('[AI DEBUG]', {
+    apiKeyExists: !!openrouter.apiKey,
+    apiKeyLength: openrouter.apiKey?.length,
+    apiKeyPreview: openrouter.apiKey?.slice(0, 6)
+  });
+
+  
+  try { 
+    const options = {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${openrouter.apiKey}`,
-        'Content-Type': 'application/json'
-      },
+      headers: {Authorization:  `Bearer ${openrouter.apiKey}`, 'Content-Type': 'application/json'},
       body: JSON.stringify({
-        model: openrouter.model,
-        messages,
-        temperature: openrouter.temperature
-      })
-    });
+        model: 'deepseek/deepseek-r1-0528:free',
+        messages
+      })};
+ 
+    // 5️⃣ Запрос к OpenRouter
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', options);
+    console.log('[AI response]', response) 
 
     // 6️⃣ Обработка не-200 ответов
     if (!response.ok) {
@@ -62,6 +69,8 @@ export async function getAIAnswer(userQuestion) {
     }
 
     const data = await response.json();
+    console.log('[AI RAW DATA]', JSON.stringify(data, null, 2));
+
 
     // 7️⃣ Безопасный доступ к ответу
     return data?.choices?.[0]?.message?.content || null;

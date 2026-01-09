@@ -1,7 +1,7 @@
 // src/bot/handlers/messageHandler.js
 
 import { uiService, questionService, messageService } from '../services/index.js';
-
+import { getAIAnswer } from '../../ai/ai.service.js'
 /**
  * Обработчик входящих текстовых сообщений
  *
@@ -17,7 +17,18 @@ export async function messageHandler(bot, msg) {
   // Игнорируем команды и пустые сообщения
   if (!text || text.startsWith('/')) return;
 
+  
   try {
+    if (text.startsWith('ai:')) {
+      const question = text.replace('ai:', '').trim();
+    
+      const aiReply = await getAIAnswer(question);
+    
+console.log('[AI REPLY]', aiReply);
+      await bot.sendMessage(chatId, aiReply || 'AI не ответил');
+      return;
+    }
+
     // 1️⃣ Регистрируем сообщение пользователя как служебное
     await uiService.registerMessage(chatId, msg.message_id);
 
