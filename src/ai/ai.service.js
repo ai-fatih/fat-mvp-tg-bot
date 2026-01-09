@@ -33,9 +33,9 @@ export async function getAIAnswer(userQuestion) {
 
   // 4️⃣ Формирование сообщений для модели
   const messages = [
-    { role: 'system', content: SYSTEM_PROMPT },
+   /*  { role: 'system', content: SYSTEM_PROMPT },
     { role: 'system', content: STOREHOUSE_PROMPT },
-    { role: 'user', content: safeQuestion }
+    */ { role: 'user', content: safeQuestion }
   ];
 
   console.log('[AI DEBUG]', {
