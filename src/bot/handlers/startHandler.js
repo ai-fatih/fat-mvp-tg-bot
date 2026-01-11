@@ -83,10 +83,10 @@ export async function startHandler(bot, msg) {
 
     /**
      * 6. Приветственный экран (один раз)
-     */
+      
     const currentState = state.getState(chatId);
 
-  /*   console.log('[START][HELLO_CHECK]', {
+     console.log('[START][HELLO_CHECK]', {
       helloShown: currentState.helloShown,
     });
 

@@ -5,7 +5,7 @@ import { botConfig } from '../bot/botConfig.js';
 
 export const config = {
   NODE_ENV: ENV.NODE_ENV,
-  DOCS_URL: ENV.DOCS_URL,
+  DOCS_URL: ENV.DOCS_URL ?? DEFAULTS.DOCS_URL,
   TELEGRAM_BOT_TOKEN: ENV.TELEGRAM_BOT_TOKEN,
 
   ai: {
@@ -20,6 +20,11 @@ export const config = {
     }
   },
 
+  pdfs: DEFAULTS.pdfs.map(pdf => ({
+    ...pdf,
+    enabled: true
+  }))
+  ,
   CONSTANTS,
   botConfig
 };
@@ -62,3 +67,12 @@ if (config.ai.enabled) {
     config.ai.enabled = false;
   }
 }
+
+if (!config.pdfs?.length) {
+  throw new Error('❌ Не задан ни один PDF-документ');
+}
+config.pdfs.forEach(pdf => {
+  if (!pdf.path) {
+    throw new Error(`❌ PDF ${pdf.id} не содержит path`);
+  }
+});
