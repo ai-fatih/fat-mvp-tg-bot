@@ -23,14 +23,14 @@ export function buildServiceMessage(status, questions = []) {
   const questionsList = telegram.buildQuestionsList(questions);
 
 
-  const mainTopics = [
+  /* const mainTopics = [
     { text: 'ЕГАИС', action: 'egais' },
     { text: 'Заявки', action: 'requests' },
     { text: 'Накладные', action: 'invoices' },
     { text: 'Справочники', action: 'references' },
     { text: 'Отчеты', action: 'reports' }
   ];
-   
+    */
   
   /**
    * 🧭 MVP-debug: строка текущего статуса
@@ -48,9 +48,8 @@ export function buildServiceMessage(status, questions = []) {
   ]
     .filter(Boolean)
     .join('\n\n');
-
-  const reply_markup = telegram.buildInlineKeyboard(mainTopics); 
-  /* const reply_markup = telegram.buildInlineKeyboard(tpl.btns); */
+ 
+  const reply_markup = telegram.buildInlineKeyboard(tpl.btns);
 
   return { text, reply_markup };
 }
