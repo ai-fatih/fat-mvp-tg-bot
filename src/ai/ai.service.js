@@ -1,7 +1,5 @@
 // src/ai/ai.service.js
 import { config } from '../config/index.js';
-import { SYSTEM_PROMPT } from './prompts/system.prompt.js';
-import { STOREHOUSE_PROMPT } from './prompts/storehouse.prompt.js';
 
 /**
  * Получить ответ от AI
@@ -33,10 +31,16 @@ export async function getAIAnswer(userQuestion) {
 
   // 4️⃣ Формирование сообщений для модели
   const messages = [
-   /*  { role: 'system', content: SYSTEM_PROMPT },
-    { role: 'system', content: STOREHOUSE_PROMPT },
-    */ { role: 'user', content: safeQuestion }
+    {
+      role: 'system',
+      content: 'Отвечай кратко и по делу. Максимум 3500 символов. В стиле переписки в мессенджере Telegram.'
+    },
+    {
+      role: 'user',
+      content: safeQuestion
+    }
   ];
+  
 
   console.log('[AI DEBUG]', {
     apiKeyExists: !!openrouter.apiKey,
@@ -56,8 +60,7 @@ export async function getAIAnswer(userQuestion) {
  
     // 5️⃣ Запрос к OpenRouter
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', options);
-    console.log('[AI response]', response) 
-
+  
     // 6️⃣ Обработка не-200 ответов
     if (!response.ok) {
       console.error(
@@ -69,11 +72,32 @@ export async function getAIAnswer(userQuestion) {
     }
 
     const data = await response.json();
-    console.log('[AI RAW DATA]', JSON.stringify(data, null, 2));
+    console.log(
+      '[AI CONTENT TYPE]',
+      typeof data?.choices?.[0]?.message?.content,
+      data?.choices?.[0]?.message?.content
+    );
+    
 
+    const content = data?.choices?.[0]?.message?.content;
 
-    // 7️⃣ Безопасный доступ к ответу
-    return data?.choices?.[0]?.message?.content || null;
+    if (!content) return null;
+    
+    // DeepSeek / OpenRouter может вернуть массив
+    if (Array.isArray(content)) {
+      return content
+        .map(part => part.text || '')
+        .join('')
+        .trim();
+    }
+    
+    // Обычный кейс
+    if (typeof content === 'string') {
+      return content.trim();
+    }
+    
+    return null;
+    
 
   } catch (error) {
     console.error('[AI SERVICE ERROR]', error);
